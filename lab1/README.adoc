@@ -1,0 +1,94 @@
+= Matrix-Vector Multiplication Performance Analysis
+
+== Introduction
+
+The number of scalar operations stem:[N] required for matrix-vector multiplication for a given matrix size stem:[ \text{Size} ] is given by:
+
+latexmath:[N = \text{Size} \times \text{Size} \times 2 - \text{Size}]
+
+This formula captures both the multiplications and the additions required for the multiplication of a matrix row with a vector.
+
+=== Execution Time of a Single Scalar Operation
+
+The execution time stem:[ \tau ] of a single scalar operation is derived from a pivot experiment, where the real execution time for a matrix of size 5,000 was provided:
+
+latexmath:[ \tau = \frac{\text{Real Execution Time for Size 5,000}}{N} ]
+
+Where stem:[ N ] is the number of scalar operations for a matrix of size 5,000.
+
+=== Theoretical Execution Time
+
+The theoretical execution time stem:[ T ] for a matrix of size stem:[ \text{Size} ] is given by:
+
+latexmath:[ T = \tau \times (\text{Size} \times \text{Size} \times 2 - \text{Size}) ]
+
+== Results
+
+=== Theoretical Execution Time Calculation
+
+Given that the execution time for matrix-vector multiplication of size 5,000 is stem:[32.898] ms (or stem:[0.032898] seconds), we use this value as our pivot to calculate the execution time stem:[ \tau ] of a single scalar operation.
+
+Using the provided formula:
+latexmath:[ N = \text{Size} \times \text{Size} \times 2 - \text{Size} ]
+
+For matrix size 5,000, the number of scalar operations stem:[ N ] is:
+latexmath:[ N = 5,000 \times 5,000 \times 2 - 5,000 ]
+
+Now, latexmath:[ \tau = \frac{\text{Real Execution Time for Size 5,000}}{N} ]
+latexmath:[ \tau = \frac{0.032898}{N} ]
+
+Once we have stem:[ \tau ], we can use it to calculate the theoretical execution time stem:[ T ] for each matrix size using the formula:
+latexmath:[ T = \tau \times ( \text{Size} \times \text{Size} \times 2 - \text{Size} ) ]
+
+Let's calculate stem:[ \tau ] and then compute the theoretical execution times for each matrix size.
+
+We have the execution time stem:[ \tau ] of a single scalar operation as approximately stem:[ 6.5796 \times 10^{-6} ] seconds.
+
+Using this value, we can calculate the theoretical execution times for each matrix size as follows:
+
+The conversions are as follows:
+
+* 1 second = stem:[ 10^9 ] nanoseconds (ns)
+* 1 second = stem:[ 10^6 ] microseconds (µs)
+* 1 second = stem:[ 10^3 ] milliseconds (ms)
+
+[cols="1,1"]
+|===
+| Matrix Size | Theoretical Execution Time (seconds)
+| 10          | 125.02 ns
+| 100         | 3.095 µs
+| 1,000       | 1.315 ms
+| 2,000       | 5.263 ms
+| 3,000       | 11.842 ms
+| 4,000       | 21.054 ms
+| 5,000       | 32.898 ms
+| 6,000       | 47.374 ms
+| 7,000       | 64.482 ms
+| 8,000       | 84.222 ms
+| 9,000       | 106.594 ms
+| 10,000      | 131.599 ms
+|===
+
+=== Comparison of Real and Theoretical Execution Times
+
+Based on the theoretical analysis and the provided pivot experiment result, the following table captures both real and theoretical execution times:
+
+[cols="1,1,1,2,2"]
+|===
+| Test Number | Matrix Size | Real Execution Time (sec) | Number of Scalar Operations (N) | Theoretical Execution Time (T)
+| 1           | 10          | 135.33 ns                 | latexmath:[10 \times 10 \times 2 - 10]                | 125.02 ns
+| 2           | 100         | 9.5698 µs                 | latexmath:[100 \times 100 \times 2 - 100]             | 13.095 µs
+| 3           | 1,000       | 1.2751 ms                 | latexmath:[1,000 \times 1,000 \times 2 - 1,000]       | 1.315 ms
+| 4           | 2,000       | 5.0452 ms                 | latexmath:[2,000 \times 2,000 \times 2 - 2,000]       | 5.263 ms
+| 5           | 3,000       | 11.095 ms                 | latexmath:[3,000 \times 3,000 \times 2 - 3,000]       | 11.842 ms
+| 6           | 4,000       | 20.127 ms                 | latexmath:[4,000 \times 4,000 \times 2 - 4,000]       | 21.054 ms
+| 7           | 5,000       | 32.898 ms                 | latexmath:[5,000 \times 5,000 \times 2 - 5,000]       | 32.898 ms
+| 8           | 6,000       | 45.706 ms                 | latexmath:[6,000 \times 6,000 \times 2 - 6,000]       | 47.374 ms
+| 9           | 7,000       | 61.982 ms                 | latexmath:[7,000 \times 7,000 \times 2 - 7,000]       | 64.482 ms
+| 10          | 8,000       | 86.171 ms                 | latexmath:[8,000 \times 8,000 \times 2 - 8,000]       | 84.222 ms
+| 11          | 9,000       | 108.25 ms                 | latexmath:[9,000 \times 9,000 \times 2 - 9,000]       | 106.594 ms
+| 12          | 10,000      | 131.99 ms                 | latexmath:[10,000 \times 10,000 \times 2 - 10,000]    | 131.599 ms
+|===
+
+== Conclusion
+

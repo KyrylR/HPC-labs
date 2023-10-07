@@ -1,0 +1,21 @@
+[package]
+name = "lab1"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = { version = "0.8.5" }
+
+once_cell = { workspace = true }
+criterion = { workspace = true }
+
+[[bin]]
+name = "lab1"
+path = "src/bin/lab1.rs"
+
+[[bench]]
+name = "bench"
+path = "benches/bench.rs"
+harness = false

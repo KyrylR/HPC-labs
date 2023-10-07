@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+
+members = [
+  "lab1"
+]
+
+[workspace.dependencies]
+once_cell = { version = "1.18.0" }
+criterion = { version = "0.5.1" }
