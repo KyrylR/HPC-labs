@@ -10,6 +10,8 @@ rand = { version = "0.8.5" }
 
 once_cell = { workspace = true }
 criterion = { workspace = true }
+thiserror = { workspace = true }
+mpi = { workspace = true }
 
 [[bin]]
 name = "lab1"
