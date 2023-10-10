@@ -1,8 +1,8 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 
-use lab1::{matrix_vector_product, random_data_initialization};
+use lab1::serial::{matrix_vector_product, random_data_initialization};
 
-fn bench_lab1(c: &mut Criterion) {
+fn bench_serial_lab1(c: &mut Criterion) {
     let mut group = c.benchmark_group("lab1");
 
     group.bench_function("random_data_init", |b| {
@@ -17,13 +17,11 @@ fn bench_lab1(c: &mut Criterion) {
         let bench_name = format!("matrix_vector_product: {} samples", size);
         let (m, v) = random_data_initialization(size);
 
-        group.bench_function(&bench_name, |b| {
-            b.iter(|| matrix_vector_product(&m, &v))
-        });
+        group.bench_function(&bench_name, |b| b.iter(|| matrix_vector_product(&m, &v)));
     }
 
     group.finish();
 }
 
-criterion_group!(benches, bench_lab1);
+criterion_group!(benches, bench_serial_lab1);
 criterion_main!(benches);
