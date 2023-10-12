@@ -1,6 +1,6 @@
 use std::io;
 
-pub fn process_init() -> Result<i128, io::Error> {
+pub fn input_size() -> Result<i64, io::Error> {
     println!("Enter the size of the initial objects: ");
 
     let mut size = String::new();
@@ -9,7 +9,7 @@ pub fn process_init() -> Result<i128, io::Error> {
         .read_line(&mut size)
         .expect("Failed to read line");
 
-    let size: i128 = size
+    let size: i64 = size
         .trim()
         .parse()
         .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;

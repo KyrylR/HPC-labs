@@ -3,5 +3,5 @@ fn main() {
     // lab1::serial::example();
 
     // To run Parallel example uncomment the following line
-    // lab1::parallel::example();
+    lab1::parallel::example().expect("Failed to run Parallel example");
 }

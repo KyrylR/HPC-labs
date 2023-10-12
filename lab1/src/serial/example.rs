@@ -1,11 +1,11 @@
-use crate::common::process_init;
+use crate::common::input_size;
 
 use crate::serial::{
     matrix_vector_product, print_matrix, print_vector, random_data_initialization,
 };
 
 pub fn example() {
-    match process_init() {
+    match input_size() {
         Ok(size) => {
             let (m, v) = random_data_initialization(size);
 
