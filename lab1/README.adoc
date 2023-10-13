@@ -8,7 +8,6 @@ latexmath:[N = \text{Size} \times \text{Size} \times 2 - \text{Size}]
 
 This formula captures both the multiplications and the additions required for the multiplication of a matrix row with a vector.
 
-=== Execution Time of a Single Scalar Operation
 
 The execution time latexmath:[ \tau ] of a single scalar operation is derived from a pivot experiment, where the real execution time for a matrix of size 5,000 was provided:
 
@@ -96,5 +95,98 @@ Based on the theoretical analysis and the provided pivot experiment result, the 
 
 |===
 
+.Parallel Execution Times in comparison to Serial Execution Time
+[cols="2,2,2,2,2"]
+|===
+| Matrix Size | Serial       | 2 processors | 4 processors | 8 processors
+
+| 10          | 135.33 ns    | 41.217 µs    | 66.649 µs    | 99.865 µs
+| 100         | 9.5698 µs    | 81.71 µs     | 94.002 µs    | 199.961 µs
+| 1,000       | 1.2751 ms    | 2.022 ms     | 2.106 ms     | 2.34020 ms
+| 2,000       | 5.0452 ms    | 4.744 ms     | 5.061 ms     | 8.24146 ms
+| 3,000       | 11.095 ms    | 8.835 ms     | 10.029 ms    | 13.6141 ms
+| 4,000       | 20.127 ms    | 15.686 ms    | 13.885 ms    | 20.2702 ms
+| 5,000       | 32.898 ms    | 23.853 ms    | 22.508 ms    | 30.5483 ms
+| 6,000       | 45.706 ms    | 32.066 ms    | 32.537 ms    | 42.3065 ms
+| 7,000       | 61.982 ms    | 43.010 ms    | 41.101 ms    | 49.9254 ms
+| 8,000       | 86.171 ms    | 53.917 ms    | 49.607 ms    | 59.6414 ms
+| 9,000       | 108.25 ms    | 76.2415 ms   | 73.1496 ms   | 78.4362 ms
+| 10,000      | 131.99 ms    | 89.7683 ms   | 84.1125 ms   | 89.8673 ms
+| 30,000      | 846.43 ms    | 939.18 ms    | 721.585 ms   | 865.658 ms
+
+|===
+
+.Speedup in comparison to Serial Execution Time
+[cols="2,2,2,2"]
+|===
+| Matrix Size | 2 processors | 4 processors | 8 processors
+
+| 10          | 0.0033       | 0.0020       | 0.0014
+| 100         | 0.1171       | 0.1018       | 0.0479
+| 1,000       | 0.6306       | 0.6055       | 0.5449
+| 2,000       | 1.0635       | 0.9969       | 0.6122
+| 3,000       | 1.2558       | 1.1063       | 0.8150
+| 4,000       | 1.2831       | 1.4495       | 0.9929
+| 5,000       | 1.3792       | 1.4616       | 1.0769
+| 6,000       | 1.4254       | 1.4047       | 1.0804
+| 7,000       | 1.4411       | 1.5080       | 1.2415
+| 8,000       | 1.5982       | 1.7371       | 1.4448
+| 9,000       | 1.4198       | 1.4798       | 1.3801
+| 10,000      | 1.4703       | 1.5692       | 1.4687
+| 30,000      | 0.9012       | 1.1730       | 0.9778
+
+|===
+
+=== Comparison of Real vs Scaled Theoretical Execution Times (in seconds)
+
+The constants used for this adjustment are:
+
+- latexmath:[\alpha] (latency) = 0.5 ns (nanoseconds)
+- latexmath:[\beta] (bandwidth) = 400 Gbps (or latexmath:[5 \times 10^{11}] bytes per second)
+
+This table provides a closer match between real and theoretical times by scaling the theoretical values. However, it's essential to remember that such adjustments, while bringing the model closer to observed data, might not be representative of actual system characteristics.
+
+The formula used for theoretical times is:
+
+latexmath:[T_p = \frac{n}{p} \times (2n - 1) \times \tau + \alpha \times \log_2 p + w \times \frac{n}{p} \times (2^{\log_2 p} - 1) \div \beta]
+
+where:
+- latexmath:[n] is the matrix size.
+- latexmath:[p] is the number of processors.
+- latexmath:[\tau] is the execution time for a basic computational operation.
+- latexmath:[\alpha] is the latency.
+- latexmath:[\beta] is the bandwidth.
+- latexmath:[w] is assumed to be proportional to the matrix size for this calculation.
+
+
+.Comparison of Real vs Scaled Theoretical Execution Times (in seconds)
+[cols="2,3,3,3"]
+|===
+| Matrix Size | 2 processors (Real, Scaled Theoretical) | 4 processors (Real, Scaled Theoretical) | 8 processors (Real, Scaled Theoretical)
+
+| 10          | 41.217 µs, 1.1882 ns                    | 66.649 µs, 0.5949 ns                    | 99.865 µs, 0.2984 ns
+| 100         | 81.71 µs, 1.3029 µs                     | 94.002 µs, 651.5 ns                     | 199.961 µs, 325.7 ns
+| 1,000       | 2.022 ms, 1.3147 ms                     | 2.106 ms, 657.4 µs                      | 2.34020 ms, 328.7 µs
+| 2,000       | 4.744 ms, 10.5232 ms                    | 5.061 ms, 5.2616 ms                     | 8.24146 ms, 2.6308 ms
+| 3,000       | 8.835 ms, 35.5216 ms                    | 10.029 ms, 17.7609 ms                   | 13.6141 ms, 8.8805 ms
+| 4,000       | 15.686 ms, 84.2064 ms                   | 13.885 ms, 42.1033 ms                   | 20.2702 ms, 21.0518 ms
+| 5,000       | 23.853 ms, 164.474 ms                   | 22.508 ms, 82.2372 ms                   | 30.5483 ms, 41.1188 ms
+| 6,000       | 32.066 ms, 284.220 ms                   | 32.537 ms, 142.111 ms                   | 42.3065 ms, 71.0557 ms
+| 7,000       | 43.010 ms, 451.342 ms                   | 41.101 ms, 225.672 ms                   | 49.9254 ms, 112.837 ms
+| 8,000       | 53.917 ms, 673.735 ms                   | 49.607 ms, 336.869 ms                   | 59.6414 ms, 168.435 ms
+| 9,000       | 76.2415 ms, 959.296 ms                  | 73.1496 ms, 479.650 ms                  | 78.4362 ms, 239.826 ms
+| 10,000      | 89.7683 ms, 1.3159 s                    | 84.1125 ms, 657.963 ms                  | 89.8673 ms, 328.984 ms
+| 30,000      | 939.18 ms, 35.5323 s                    | 721.585 ms, 17.7662 s                   | 865.658 ms, 8.8831 s
+
+|===
+
 == Conclusion
 
+In analyzing matrix-vector multiplication, the parallel execution time was initially taken from the first process.
+However, for a more accurate representation of total execution, the maximum time across all processes should be considered,
+requiring code modifications. The difference between serial and parallel execution times is significant, with the
+parallel approach often outperforming the serial, especially for larger matrix sizes. For a 10x10 matrix, there was
+minimal to no speedup due to the overhead of parallelization, which often outweighs the benefits for such small data sizes.
+While theoretical values provide a guideline, they varied significantly from the experimental results. Such incongruities
+can arise from system-specific factors, communication overheads, and the assumptions made in theoretical modeling.
+Future exercises involve exploring different matrix partitioning strategies to further optimize parallel matrix-vector multiplication.

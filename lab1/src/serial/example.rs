@@ -7,17 +7,17 @@ use crate::serial::{
 pub fn example() {
     match input_size() {
         Ok(size) => {
-            let (m, v) = random_data_initialization(size);
+            let (m, v) = random_data_initialization::<i64>(size);
 
-            println!("Matrix:");
-            print_matrix(&m);
-
-            println!("Vector:");
-            print_vector(&v);
+            // println!("Matrix:");
+            // print_matrix(&m);
+            //
+            // println!("Vector:");
+            // print_vector(&v);
 
             let start = std::time::Instant::now();
 
-            matrix_vector_product(&m, &v);
+            matrix_vector_product::<i64, i128>(&m, &v);
 
             let duration = start.elapsed();
 
