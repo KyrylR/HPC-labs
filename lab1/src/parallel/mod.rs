@@ -48,10 +48,11 @@ pub fn input_size_with_checks(process_number: u32) -> Result<u64, std::io::Error
 }
 
 pub fn data_distribution(
-    flatten_matrix: &mut Vec<u64>,
+    flatten_matrix: &mut [u64],
     vector: &mut Vec<u64>,
     size: u64,
     world: &SystemCommunicator,
+    received_matrix: &mut Vec<u64>,
 ) {
     let process_rank = world.rank();
     let process_count = world.size();
@@ -65,10 +66,6 @@ pub fn data_distribution(
 
     root_process.broadcast_into(vector);
 
-    let rows_per_process = compute_rows_for_rank(process_rank, size, process_count, bigger_count);
-
-    let mut received_matrix: Vec<u64> = vec![0; (rows_per_process * size as i32) as usize];
-
     if process_rank == 0 {
         let counts: Vec<i32> = (0..world.size())
             .map(|rank| {
@@ -77,13 +74,11 @@ pub fn data_distribution(
             .collect();
         let dispels: Vec<i32> = get_dispels(&counts);
 
-        let partition = Partition::new(&flatten_matrix[..], counts, &dispels[..]);
+        let partition = Partition::new(flatten_matrix, counts, &dispels[..]);
         root_process.scatter_varcount_into_root(&partition, &mut received_matrix[..]);
     } else {
-        root_process.scatter_varcount_into(&mut received_matrix);
+        root_process.scatter_varcount_into(received_matrix);
     }
-
-    *flatten_matrix = received_matrix;
 }
 
 pub fn process_rows_and_vector_multiplication(
@@ -116,7 +111,7 @@ pub fn result_replication(
     }
 }
 
-fn compute_rows_for_rank(rank: i32, size: u64, process_count: i32, bigger_count: i32) -> i32 {
+pub fn compute_rows_for_rank(rank: i32, size: u64, process_count: i32, bigger_count: i32) -> i32 {
     let mut rows_per_process = size as i32 / process_count;
     if rank < bigger_count {
         rows_per_process += 1;

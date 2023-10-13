@@ -1,8 +1,8 @@
 use mpi::traits::*;
 
 use lab1::parallel::{
-    data_distribution, input_size_with_checks, process_rows_and_vector_multiplication,
-    result_replication, Error,
+    compute_rows_for_rank, data_distribution, input_size_with_checks,
+    process_rows_and_vector_multiplication, result_replication, Error,
 };
 use lab1::serial::{matrix_vector_product, random_data_initialization};
 
@@ -35,16 +35,22 @@ pub fn main() -> Result<(), Error> {
         serial_result = matrix_vector_product(&matrix, &vector);
     }
 
-    let t_start = mpi::time();
-    data_distribution(&mut matrix, &mut vector, size, &world);
+    let process_rank = world.rank();
+    let process_count = world.size();
+    let bigger_count = size as i32 % process_count;
 
-    let mul_res = process_rows_and_vector_multiplication(&matrix, &vector);
+    let rows_per_process = compute_rows_for_rank(process_rank, size, process_count, bigger_count);
 
     let mut global_res = vec![0; size as usize];
+    let mut received_matrix: Vec<u64> = vec![0; (rows_per_process * size as i32) as usize];
+
+    let t_start = mpi::time();
+    data_distribution(&mut matrix, &mut vector, size, &world, &mut received_matrix);
+
+    let mul_res = process_rows_and_vector_multiplication(&received_matrix, &vector);
 
     result_replication(&mul_res, &mut global_res, size, &world);
-    let t_end = mpi::time();
-    let duration = t_end - t_start;
+    let duration = mpi::time() - t_start;
 
     if world.rank() == 0 {
         test_result(serial_result.as_slice(), &global_res, size);
