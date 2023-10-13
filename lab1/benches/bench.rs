@@ -10,7 +10,9 @@ fn bench_serial_lab1(c: &mut Criterion) {
     });
 
     // List of sample sizes for matrix-vector product
-    // let sample_sizes = [10, 100, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
+    // let sample_sizes = [
+    //     10, 100, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
+    // ];
     let sample_sizes = [5000]; // comment this line to run all sample sizes and uncomment the line above
 
     for &size in &sample_sizes {

@@ -1,4 +1,4 @@
-use mpi::datatype::{Partition, PartitionMut};
+use mpi::datatype::PartitionMut;
 use mpi::topology::SystemCommunicator;
 use mpi::traits::*;
 
@@ -47,39 +47,33 @@ pub fn input_size_with_checks(process_number: u32) -> Result<u64, std::io::Error
     Ok(size)
 }
 
-pub fn data_distribution(
-    flatten_matrix: &mut [u64],
-    vector: &mut Vec<u64>,
-    size: u64,
-    world: &SystemCommunicator,
-    received_matrix: &mut Vec<u64>,
-) {
-    let process_rank = world.rank();
-    let process_count = world.size();
-    let bigger_count = size as i32 % process_count;
-
-    let root_process = world.process_at_rank(0);
-
-    if process_rank != 0 {
-        *vector = vec![0; size as usize];
-    }
-
-    root_process.broadcast_into(vector);
-
-    if process_rank == 0 {
-        let counts: Vec<i32> = (0..world.size())
-            .map(|rank| {
-                compute_rows_for_rank(rank, size, process_count, bigger_count) * size as i32
-            })
-            .collect();
-        let dispels: Vec<i32> = get_dispels(&counts);
-
-        let partition = Partition::new(flatten_matrix, counts, &dispels[..]);
-        root_process.scatter_varcount_into_root(&partition, &mut received_matrix[..]);
-    } else {
-        root_process.scatter_varcount_into(received_matrix);
-    }
-}
+// pub fn data_distribution(
+//     flatten_matrix: &mut [u64],
+//     vector: &mut Vec<u64>,
+//     size: u64,
+//     world: &SystemCommunicator,
+//     received_matrix: &mut Vec<u64>,
+// ) {
+//     let root_process = world.process_at_rank(0);
+//     root_process.broadcast_into(vector);
+//
+//     if world.rank() == 0 {
+//         let process_count = world.size();
+//         let bigger_count = size as i32 % process_count;
+//
+//         let counts: Vec<i32> = (0..world.size())
+//             .map(|rank| {
+//                 compute_rows_for_rank(rank, size, process_count, bigger_count) * size as i32
+//             })
+//             .collect();
+//         let dispels: Vec<i32> = get_dispels(&counts);
+//
+//         let partition = Partition::new(flatten_matrix, counts, &dispels[..]);
+//         root_process.scatter_varcount_into_root(&partition, &mut received_matrix[..]);
+//     } else {
+//         root_process.scatter_varcount_into(received_matrix);
+//     }
+// }
 
 pub fn process_rows_and_vector_multiplication(
     flatten_matrix_stripe: &[u64],
@@ -119,7 +113,7 @@ pub fn compute_rows_for_rank(rank: i32, size: u64, process_count: i32, bigger_co
     rows_per_process
 }
 
-fn get_dispels(counts: &[i32]) -> Vec<i32> {
+pub fn get_dispels(counts: &[i32]) -> Vec<i32> {
     counts
         .iter()
         .scan(0, |acc, &x| {
