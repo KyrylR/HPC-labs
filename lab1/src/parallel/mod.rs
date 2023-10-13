@@ -26,14 +26,20 @@ pub fn init_program() -> Result<SystemCommunicator, Error> {
     Ok(world)
 }
 
-pub fn input_size_with_checks() -> Result<i32, std::io::Error> {
+pub fn input_size_with_checks(process_number: i32) -> Result<i32, std::io::Error> {
     let mut size = -1;
 
-    while size < 0 || size % 2 != 0 {
+    while size < 0 {
         size = input_size()?;
 
         if size < 0 {
             println!("Size of the objects must be greater than 0!");
+
+            continue;
+        }
+
+        if size < process_number {
+            println!("Size of the matrix must be greater than the number of processes!");
 
             continue;
         }

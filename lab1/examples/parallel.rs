@@ -17,7 +17,7 @@ pub fn main() -> Result<(), Error> {
     if world.rank() == 0 {
         println!("Parallel matrix-vector multiplication program");
 
-        size = input_size_with_checks()?;
+        size = input_size_with_checks(world.size())?;
     }
 
     let root_process = world.process_at_rank(0);
