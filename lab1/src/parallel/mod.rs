@@ -1,7 +1,6 @@
 use mpi::datatype::{Partition, PartitionMut};
 use mpi::topology::SystemCommunicator;
 use mpi::traits::*;
-use mpi::Count;
 
 use crate::common::input_size;
 pub use crate::parallel::error::Error;
@@ -26,19 +25,19 @@ pub fn init_program() -> Result<SystemCommunicator, Error> {
     Ok(world)
 }
 
-pub fn input_size_with_checks(process_number: i32) -> Result<i32, std::io::Error> {
-    let mut size = -1;
+pub fn input_size_with_checks(process_number: u32) -> Result<u64, std::io::Error> {
+    let mut size = 0_u64;
 
-    while size < 0 {
+    while size == 0 {
         size = input_size()?;
 
-        if size < 0 {
+        if size == 0 {
             println!("Size of the objects must be greater than 0!");
 
             continue;
         }
 
-        if size < process_number {
+        if size < process_number as u64 {
             println!("Size of the matrix must be greater than the number of processes!");
 
             continue;
@@ -49,14 +48,14 @@ pub fn input_size_with_checks(process_number: i32) -> Result<i32, std::io::Error
 }
 
 pub fn data_distribution(
-    flatten_matrix: &mut Vec<i32>,
-    vector: &mut Vec<i32>,
-    size: i32,
+    flatten_matrix: &mut Vec<u64>,
+    vector: &mut Vec<u64>,
+    size: u64,
     world: &SystemCommunicator,
 ) {
     let process_rank = world.rank();
     let process_count = world.size();
-    let bigger_count = size % process_count;
+    let bigger_count = size as i32 % process_count;
 
     let root_process = world.process_at_rank(0);
 
@@ -68,11 +67,13 @@ pub fn data_distribution(
 
     let rows_per_process = compute_rows_for_rank(process_rank, size, process_count, bigger_count);
 
-    let mut received_matrix: Vec<i32> = vec![0; (rows_per_process * size) as usize];
+    let mut received_matrix: Vec<u64> = vec![0; (rows_per_process * size as i32) as usize];
 
     if process_rank == 0 {
         let counts: Vec<i32> = (0..world.size())
-            .map(|rank| compute_rows_for_rank(rank, size, process_count, bigger_count) * size)
+            .map(|rank| {
+                compute_rows_for_rank(rank, size, process_count, bigger_count) * size as i32
+            })
             .collect();
         let dispels: Vec<i32> = get_dispels(&counts);
 
@@ -86,33 +87,28 @@ pub fn data_distribution(
 }
 
 pub fn process_rows_and_vector_multiplication(
-    flatten_matrix_stripe: &[i32],
-    vector: &[i32],
-) -> Vec<i64> {
+    flatten_matrix_stripe: &[u64],
+    vector: &[u64],
+) -> Vec<u64> {
     flatten_matrix_stripe
         .chunks(vector.len())
-        .map(|row| {
-            row.iter()
-                .zip(vector)
-                .map(|(&m, &v)| (m as i64) * (v as i64))
-                .sum()
-        })
+        .map(|row| row.iter().zip(vector).map(|(m, v)| m * v).sum())
         .collect()
 }
 
 pub fn result_replication(
-    p_proc_result: &[i64],
-    p_result: &mut Vec<i64>,
-    size: i32,
+    p_proc_result: &[u64],
+    p_result: &mut Vec<u64>,
+    size: u64,
     world: &SystemCommunicator,
 ) {
     let process_count = world.size();
-    let bigger_count = size % process_count;
+    let bigger_count = size as i32 % process_count;
 
-    let counts: Vec<Count> = (0..world.size())
+    let counts: Vec<i32> = (0..world.size())
         .map(|rank| compute_rows_for_rank(rank, size, process_count, bigger_count))
         .collect();
-    let dispels: Vec<Count> = get_dispels(&counts);
+    let dispels: Vec<i32> = get_dispels(&counts);
 
     {
         let mut partition = PartitionMut::new(p_result, counts, &dispels[..]);
@@ -120,15 +116,15 @@ pub fn result_replication(
     }
 }
 
-fn compute_rows_for_rank(rank: i32, size: i32, process_count: i32, bigger_count: i32) -> i32 {
-    let mut rows_per_process = size / process_count;
+fn compute_rows_for_rank(rank: i32, size: u64, process_count: i32, bigger_count: i32) -> i32 {
+    let mut rows_per_process = size as i32 / process_count;
     if rank < bigger_count {
         rows_per_process += 1;
     }
     rows_per_process
 }
 
-fn get_dispels(counts: &[Count]) -> Vec<Count> {
+fn get_dispels(counts: &[i32]) -> Vec<i32> {
     counts
         .iter()
         .scan(0, |acc, &x| {

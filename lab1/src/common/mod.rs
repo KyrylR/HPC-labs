@@ -1,12 +1,6 @@
-use std::fmt::Display;
 use std::io;
-use std::str::FromStr;
 
-pub fn input_size<T>() -> Result<T, io::Error>
-where
-    T: FromStr + Display,
-    <T as FromStr>::Err: std::fmt::Debug,
-{
+pub fn input_size() -> Result<u64, io::Error> {
     println!("Enter the size of the initial objects: ");
 
     let mut size = String::new();
@@ -15,7 +9,7 @@ where
         .read_line(&mut size)
         .expect("Failed to read line");
 
-    let size: T = size
+    let size: u64 = size
         .trim()
         .parse()
         .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, format!("{:?}", e)))?;

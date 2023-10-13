@@ -17,30 +17,28 @@ pub fn main() -> Result<(), Error> {
     if world.rank() == 0 {
         println!("Parallel matrix-vector multiplication program");
 
-        size = input_size_with_checks(world.size())?;
+        size = input_size_with_checks(world.size() as u32)?;
     }
 
     let root_process = world.process_at_rank(0);
 
     root_process.broadcast_into(&mut size);
 
-    let mut matrix: Vec<Vec<i32>> = vec![];
-    let mut vector: Vec<i32> = vec![];
+    let mut matrix: Vec<u64> = vec![];
+    let mut vector: Vec<u64> = vec![];
 
     let mut serial_result = vec![0; size as usize];
 
     if world.rank() == 0 {
-        (matrix, vector) = random_data_initialization::<i32>(size as usize);
+        (matrix, vector) = random_data_initialization(size);
 
-        serial_result = matrix_vector_product::<i32, i64>(&matrix, &vector);
+        serial_result = matrix_vector_product(&matrix, &vector);
     }
 
-    let mut flat_matrix: Vec<i32> = matrix.iter().flatten().cloned().collect();
-
     let t_start = mpi::time();
-    data_distribution(&mut flat_matrix, &mut vector, size, &world);
+    data_distribution(&mut matrix, &mut vector, size, &world);
 
-    let mul_res = process_rows_and_vector_multiplication(&flat_matrix, &vector);
+    let mul_res = process_rows_and_vector_multiplication(&matrix, &vector);
 
     let mut global_res = vec![0; size as usize];
 
@@ -49,7 +47,7 @@ pub fn main() -> Result<(), Error> {
     let duration = t_end - t_start;
 
     if world.rank() == 0 {
-        test_result(&serial_result, &global_res, size);
+        test_result(serial_result.as_slice(), &global_res, size);
 
         println!(
             "Time elapsed in parallel matrix_vector_product() is: {:?}",
@@ -65,7 +63,7 @@ pub fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn test_result(serial_result: &[i64], p_result: &[i64], size: i32) {
+fn test_result(serial_result: &[u64], p_result: &[u64], size: u64) {
     let mut equal = 0;
 
     for i in 0..size {
