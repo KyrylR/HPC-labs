@@ -1,19 +1,15 @@
-use crate::common::input_size;
+use lab1::common::input_size;
+use lab1::serial::{matrix_vector_product, print_matrix, print_vector, random_data_initialization};
 
-use crate::serial::{
-    matrix_vector_product, print_matrix, print_vector, random_data_initialization,
-};
+pub mod parallel;
 
-pub fn example() {
+pub fn main() {
     match input_size() {
         Ok(size) => {
             let (m, v) = random_data_initialization::<i64>(size);
 
-            // println!("Matrix:");
-            // print_matrix(&m);
-            //
-            // println!("Vector:");
-            // print_vector(&v);
+            print_matrix(&m);
+            print_vector(&v);
 
             let start = std::time::Instant::now();
 

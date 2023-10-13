@@ -4,12 +4,9 @@ use mpi::traits::*;
 use mpi::Count;
 
 use crate::common::input_size;
-
-mod example;
-pub use crate::parallel::example::example;
+pub use crate::parallel::error::Error;
 
 mod error;
-use crate::parallel::error::Error;
 
 pub fn init_program() -> Result<SystemCommunicator, Error> {
     let Some(universe) = mpi::initialize() else {
@@ -40,33 +37,10 @@ pub fn input_size_with_checks() -> Result<i32, std::io::Error> {
 
             continue;
         }
-
-        if size % 2 != 0 {
-            println!("Size of objects must be divisible by 2!");
-
-            continue;
-        }
     }
 
     Ok(size)
 }
-
-fn compute_rows_for_rank(rank: i32, size: i32, process_count: i32, bigger_count: i32) -> i32 {
-    let mut rows_per_process = size / process_count;
-    if rank < bigger_count {
-        rows_per_process += 1;
-    }
-    rows_per_process
-}
-
-fn get_dispels_box(counts: &[i32]) -> Box<[i32]> {
-    counts.iter().scan(0, |acc, &x| {
-        let tmp = *acc;
-        *acc += x;
-        Some(tmp)
-    }).collect::<Vec<i32>>().into_boxed_slice()
-}
-
 
 pub fn data_distribution(
     flatten_matrix: &mut Vec<i32>,
@@ -86,25 +60,13 @@ pub fn data_distribution(
 
     root_process.broadcast_into(vector);
 
-    let mut rows_per_process = size / world.size();
-
-    if process_rank < bigger_count {
-        rows_per_process += 1;
-    }
+    let rows_per_process = compute_rows_for_rank(process_rank, size, process_count, bigger_count);
 
     let mut received_matrix: Vec<i32> = vec![0; (rows_per_process * size) as usize];
 
     if process_rank == 0 {
         let counts: Vec<i32> = (0..world.size())
-            .map(|rank| {
-                let rows_per_process = size / world.size();
-
-                if rank < bigger_count {
-                    return (rows_per_process + 1) * size;
-                }
-
-                rows_per_process * size
-            })
+            .map(|rank| compute_rows_for_rank(rank, size, process_count, bigger_count) * size)
             .collect();
         let dispels: Vec<i32> = get_dispels(&counts);
 
@@ -140,16 +102,9 @@ pub fn result_replication(
 ) {
     let process_count = world.size();
     let bigger_count = size % process_count;
-    let rows_per_process = size / world.size();
 
     let counts: Vec<Count> = (0..world.size())
-        .map(|rank| {
-            if rank < bigger_count {
-                return rows_per_process + 1;
-            }
-
-            rows_per_process
-        })
+        .map(|rank| compute_rows_for_rank(rank, size, process_count, bigger_count))
         .collect();
     let dispels: Vec<Count> = get_dispels(&counts);
 
@@ -157,6 +112,14 @@ pub fn result_replication(
         let mut partition = PartitionMut::new(p_result, counts, &dispels[..]);
         world.all_gather_varcount_into(p_proc_result, &mut partition);
     }
+}
+
+fn compute_rows_for_rank(rank: i32, size: i32, process_count: i32, bigger_count: i32) -> i32 {
+    let mut rows_per_process = size / process_count;
+    if rank < bigger_count {
+        rows_per_process += 1;
+    }
+    rows_per_process
 }
 
 fn get_dispels(counts: &[Count]) -> Vec<Count> {

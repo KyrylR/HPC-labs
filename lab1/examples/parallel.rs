@@ -1,14 +1,12 @@
-use mpi::topology::SystemCommunicator;
 use mpi::traits::*;
 
-use crate::parallel::error::Error;
-use crate::parallel::{
+use lab1::parallel::{
     data_distribution, input_size_with_checks, process_rows_and_vector_multiplication,
-    result_replication,
+    result_replication, Error,
 };
-use crate::serial::{dummy_data_init, matrix_vector_product, print_matrix, print_vector, random_data_initialization};
+use lab1::serial::{matrix_vector_product, random_data_initialization};
 
-pub fn example() -> Result<(), Error> {
+pub fn main() -> Result<(), Error> {
     let Some(universe) = mpi::initialize() else {
         return Err(Error::Mpi);
     };
@@ -53,7 +51,10 @@ pub fn example() -> Result<(), Error> {
     if world.rank() == 0 {
         test_result(&serial_result, &global_res, size);
 
-        println!("Time elapsed in parallel matrix_vector_product() is: {:?}", duration);
+        println!(
+            "Time elapsed in parallel matrix_vector_product() is: {:?}",
+            duration
+        );
 
         println!(
             "the clock has a resolution of {} seconds",
@@ -62,32 +63,6 @@ pub fn example() -> Result<(), Error> {
     }
 
     Ok(())
-}
-
-fn test_distribution(matrix: &[Vec<i32>], vector: &[i32], world: &SystemCommunicator) {
-    for i in 0..world.size() {
-        if world.rank() == i {
-            println!("\nProcRank = {}", world.rank());
-            println!("Matrix Stripe:");
-            print_matrix(matrix);
-            println!("Vector:");
-            print_vector(vector);
-        }
-
-        world.barrier();
-    }
-}
-
-fn test_partial_results(p_proc_result: &[i64], world: &SystemCommunicator) {
-    for i in 0..world.size() {
-        if world.rank() == i {
-            println!("\nProcRank = {}", world.rank());
-            println!("Part of result vector:");
-            print_vector(p_proc_result);
-        }
-
-        world.barrier();
-    }
 }
 
 fn test_result(serial_result: &[i64], p_result: &[i64], size: i32) {

@@ -13,11 +13,15 @@ criterion = { workspace = true }
 thiserror = { workspace = true }
 mpi = { workspace = true }
 
-[[bin]]
-name = "lab1"
-path = "src/bin/lab1.rs"
-
 [[bench]]
 name = "bench"
 path = "benches/bench.rs"
 harness = false
+
+[[example]]
+name = "serial"
+path = "examples/serial.rs"
+
+[[example]]
+name = "parallel"
+path = "examples/parallel.rs"

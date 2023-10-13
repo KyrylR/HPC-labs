@@ -1,8 +1,5 @@
 use rand::Rng;
 
-mod example;
-pub use crate::serial::example::example;
-
 macro_rules! impl_bounded {
     ($($t:ty),+) => {
         $(
@@ -52,12 +49,16 @@ where
 }
 
 pub fn print_matrix<T: std::fmt::Display>(m: &[Vec<T>]) {
+    println!("Matrix:");
+
     for row in m {
         print_vector(row)
     }
 }
 
 pub fn print_vector<T: std::fmt::Display>(v: &[T]) {
+    print!("Vector: ");
+
     for col in v {
         print!("{} ", col);
     }
