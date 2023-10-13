@@ -34,14 +34,14 @@ For matrix size 5,000, the number of scalar operations latexmath:[ N ] is:
 latexmath:[ N = 5,000 \times 5,000 \times 2 - 5,000 ]
 
 Now, latexmath:[ \tau = \frac{\text{Real Execution Time for Size 5,000}}{N} ]
-latexmath:[ \tau = \frac{0.032898}{N} ]
+latexmath:[ \tau = \frac{0.018013}{N} ]
 
 Once we have latexmath:[ \tau ], we can use it to calculate the theoretical execution time latexmath:[ T ] for each matrix size using the formula:
 latexmath:[ T = \tau \times ( \text{Size} \times \text{Size} \times 2 - \text{Size} ) ]
 
 Let's calculate latexmath:[ \tau ] and then compute the theoretical execution times for each matrix size.
 
-We have the execution time latexmath:[ \tau ] of a single scalar operation as approximately latexmath:[ 6.5796 \times 10^{-6} ] seconds.
+We have the execution time latexmath:[ \tau ] of a single scalar operation as approximately latexmath:[ 3.60 \times 10^{-10} ] seconds.
 
 Using this value, we can calculate the theoretical execution times for each matrix size as follows:
 
@@ -56,19 +56,18 @@ The conversions are as follows:
 |===
 | Matrix Size | Theoretical Execution Time (seconds)
 
-| 10          | 125.02 ns
-| 100         | 3.095 µs
-| 1,000       | 1.315 ms
-| 2,000       | 5.263 ms
-| 3,000       | 11.842 ms
-| 4,000       | 21.054 ms
-| 5,000       | 32.898 ms
-| 6,000       | 47.374 ms
-| 7,000       | 64.482 ms
-| 8,000       | 84.222 ms
-| 9,000       | 106.594 ms
-| 10,000      | 131.599 ms
-
+| 10          | 68.456 ns
+| 100         | 7.1699 µs
+| 1,000       | 720.23 µs
+| 2,000       | 2.8816 ms
+| 3,000       | 6.4842 ms
+| 4,000       | 11.528 ms
+| 5,000       | 18.013 ms
+| 6,000       | 25.939 ms
+| 7,000       | 35.306 ms
+| 8,000       | 46.115 ms
+| 9,000       | 58.365 ms
+| 10,000      | 72.056 ms
 |===
 
 === Comparison of Real and Theoretical Execution Times
@@ -80,64 +79,62 @@ Based on the theoretical analysis and the provided pivot experiment result, the 
 |===
 | Test Number | Matrix Size | Real Execution Time (sec) | Number of Scalar Operations (N) | Theoretical Execution Time (T)
 
-| 1           | 10          | 135.33 ns                 | latexmath:[10 \times 10 \times 2 - 10]                | 125.02 ns
-| 2           | 100         | 9.5698 µs                 | latexmath:[100 \times 100 \times 2 - 100]             | 13.095 µs
-| 3           | 1,000       | 1.2751 ms                 | latexmath:[1,000 \times 1,000 \times 2 - 1,000]       | 1.315 ms
-| 4           | 2,000       | 5.0452 ms                 | latexmath:[2,000 \times 2,000 \times 2 - 2,000]       | 5.263 ms
-| 5           | 3,000       | 11.095 ms                 | latexmath:[3,000 \times 3,000 \times 2 - 3,000]       | 11.842 ms
-| 6           | 4,000       | 20.127 ms                 | latexmath:[4,000 \times 4,000 \times 2 - 4,000]       | 21.054 ms
-| 7           | 5,000       | 32.898 ms                 | latexmath:[5,000 \times 5,000 \times 2 - 5,000]       | 32.898 ms
-| 8           | 6,000       | 45.706 ms                 | latexmath:[6,000 \times 6,000 \times 2 - 6,000]       | 47.374 ms
-| 9           | 7,000       | 61.982 ms                 | latexmath:[7,000 \times 7,000 \times 2 - 7,000]       | 64.482 ms
-| 10          | 8,000       | 86.171 ms                 | latexmath:[8,000 \times 8,000 \times 2 - 8,000]       | 84.222 ms
-| 11          | 9,000       | 108.25 ms                 | latexmath:[9,000 \times 9,000 \times 2 - 9,000]       | 106.594 ms
-| 12          | 10,000      | 131.99 ms                 | latexmath:[10,000 \times 10,000 \times 2 - 10,000]    | 131.599 ms
-
+| 1           | 10          | 98.458 ns                  | 10 × 10 × 2 - 10                 | 68.456 ns
+| 2           | 100         | 5.3605 µs                  | 100 × 100 × 2 - 100              | 7.1699 µs
+| 3           | 1,000       | 734.89 µs                  | 1,000 × 1,000 × 2 - 1,000        | 720.23 µs
+| 4           | 2,000       | 2.9529 ms                  | 2,000 × 2,000 × 2 - 2,000        | 2.8816 ms
+| 5           | 3,000       | 7.0897 ms                  | 3,000 × 3,000 × 2 - 3,000        | 6.4842 ms
+| 6           | 4,000       | 11.735 ms                  | 4,000 × 4,000 × 2 - 4,000        | 11.528 ms
+| 7           | 5,000       | 18.013 ms                  | 5,000 × 5,000 × 2 - 5,000        | 18.013 ms
+| 8           | 6,000       | 25.666 ms                  | 6,000 × 6,000 × 2 - 6,000        | 25.939 ms
+| 9           | 7,000       | 36.644 ms                  | 7,000 × 7,000 × 2 - 7,000        | 35.306 ms
+| 10          | 8,000       | 47.703 ms                  | 8,000 × 8,000 × 2 - 8,000        | 46.115 ms
+| 11          | 9,000       | 61.346 ms                  | 9,000 × 9,000 × 2 - 9,000        | 58.365 ms
+| 12          | 10,000      | 79.330 ms                  | 10,000 × 10,000 × 2 - 10,000     | 72.056 ms
 |===
 
-.Parallel Execution Times in comparison to Serial Execution Time
+
+== Parallel Execution Times in comparison to Serial Execution Time
+
 [cols="2,2,2,2,2"]
 |===
 | Matrix Size | Serial       | 2 processors | 4 processors | 8 processors
-
-| 10          | 135.33 ns    | 41.217 µs    | 66.649 µs    | 99.865 µs
-| 100         | 9.5698 µs    | 81.71 µs     | 94.002 µs    | 199.961 µs
-| 1,000       | 1.2751 ms    | 2.022 ms     | 2.106 ms     | 2.34020 ms
-| 2,000       | 5.0452 ms    | 4.744 ms     | 5.061 ms     | 8.24146 ms
-| 3,000       | 11.095 ms    | 8.835 ms     | 10.029 ms    | 13.6141 ms
-| 4,000       | 20.127 ms    | 15.686 ms    | 13.885 ms    | 20.2702 ms
-| 5,000       | 32.898 ms    | 23.853 ms    | 22.508 ms    | 30.5483 ms
-| 6,000       | 45.706 ms    | 32.066 ms    | 32.537 ms    | 42.3065 ms
-| 7,000       | 61.982 ms    | 43.010 ms    | 41.101 ms    | 49.9254 ms
-| 8,000       | 86.171 ms    | 53.917 ms    | 49.607 ms    | 59.6414 ms
-| 9,000       | 108.25 ms    | 76.2415 ms   | 73.1496 ms   | 78.4362 ms
-| 10,000      | 131.99 ms    | 89.7683 ms   | 84.1125 ms   | 89.8673 ms
-| 30,000      | 846.43 ms    | 939.18 ms    | 721.585 ms   | 865.658 ms
-
+| 10          | 98.458 ns    | 9.267 µs     | 63.379 µs    | 45.951 µs
+| 100         | 5.3605 µs    | 10.76 µs     | 20.479 µs    | 30.529 µs
+| 1,000       | 734.89 µs    | 327.51 µs    | 546.37 µs    | 213.171 µs
+| 2,000       | 2.9529 ms    | 1.4954 ms    | 764.92 µs    | 612.789 µs
+| 3,000       | 7.0897 ms    | 3.2750 ms    | 1.9989 ms    | 1.31920 ms
+| 4,000       | 11.735 ms    | 7.6964 ms    | 3.8310 ms    | 2.67196 ms
+| 5,000       | 18.013 ms    | 10.273 ms    | 6.1414 ms    | 3.61441 ms
+| 6,000       | 25.666 ms    | 16.129 ms    | 6.7150 ms    | 5.72066 ms
+| 7,000       | 36.644 ms    | 21.329 ms    | 11.416 ms    | 7.66839 ms
+| 8,000       | 47.703 ms    | 29.898 ms    | 14.586 ms    | 10.6725 ms
+| 9,000       | 61.346 ms    | 36.537 ms    | 19.761 ms    | 13.0965 ms
+| 10,000      | 79.330 ms    | 43.758 ms    | 25.848 ms    | 17.3598 ms
+| 30,000      | 683.78 ms    | 395.63 ms    | 213.79 ms    | 143.395 ms
 |===
 
-.Speedup in comparison to Serial Execution Time
+== Speedup in comparison to Serial Execution Time
+
 [cols="2,2,2,2"]
 |===
 | Matrix Size | 2 processors | 4 processors | 8 processors
-
-| 10          | 0.0033       | 0.0020       | 0.0014
-| 100         | 0.1171       | 0.1018       | 0.0479
-| 1,000       | 0.6306       | 0.6055       | 0.5449
-| 2,000       | 1.0635       | 0.9969       | 0.6122
-| 3,000       | 1.2558       | 1.1063       | 0.8150
-| 4,000       | 1.2831       | 1.4495       | 0.9929
-| 5,000       | 1.3792       | 1.4616       | 1.0769
-| 6,000       | 1.4254       | 1.4047       | 1.0804
-| 7,000       | 1.4411       | 1.5080       | 1.2415
-| 8,000       | 1.5982       | 1.7371       | 1.4448
-| 9,000       | 1.4198       | 1.4798       | 1.3801
-| 10,000      | 1.4703       | 1.5692       | 1.4687
-| 30,000      | 0.9012       | 1.1730       | 0.9778
-
+| 10          | 0.0106       | 0.0016       | 0.0021
+| 100         | 0.4982       | 0.2618       | 0.1756
+| 1,000       | 2.244        | 1.345        | 3.447
+| 2,000       | 1.975        | 3.860        | 4.819
+| 3,000       | 2.165        | 3.547        | 5.374
+| 4,000       | 1.525        | 3.063        | 4.392
+| 5,000       | 1.753        | 2.933        | 4.984
+| 6,000       | 1.591        | 3.822        | 4.487
+| 7,000       | 1.718        | 3.210        | 4.779
+| 8,000       | 1.596        | 3.270        | 4.470
+| 9,000       | 1.679        | 3.104        | 4.684
+| 10,000      | 1.813        | 3.069        | 4.570
+| 30,000      | 1.728        | 3.198        | 4.769
 |===
 
-=== Comparison of Real vs Scaled Theoretical Execution Times (in seconds)
+== Comparison of Real vs Scaled Theoretical Execution Times (in seconds)
 
 The constants used for this adjustment are:
 
@@ -158,35 +155,49 @@ where:
 - latexmath:[\beta] is the bandwidth.
 - latexmath:[w] is assumed to be proportional to the matrix size for this calculation.
 
-
-.Comparison of Real vs Scaled Theoretical Execution Times (in seconds)
 [cols="2,3,3,3"]
 |===
 | Matrix Size | 2 processors (Real, Scaled Theoretical) | 4 processors (Real, Scaled Theoretical) | 8 processors (Real, Scaled Theoretical)
-
-| 10          | 41.217 µs, 1.1882 ns                    | 66.649 µs, 0.5949 ns                    | 99.865 µs, 0.2984 ns
-| 100         | 81.71 µs, 1.3029 µs                     | 94.002 µs, 651.5 ns                     | 199.961 µs, 325.7 ns
-| 1,000       | 2.022 ms, 1.3147 ms                     | 2.106 ms, 657.4 µs                      | 2.34020 ms, 328.7 µs
-| 2,000       | 4.744 ms, 10.5232 ms                    | 5.061 ms, 5.2616 ms                     | 8.24146 ms, 2.6308 ms
-| 3,000       | 8.835 ms, 35.5216 ms                    | 10.029 ms, 17.7609 ms                   | 13.6141 ms, 8.8805 ms
-| 4,000       | 15.686 ms, 84.2064 ms                   | 13.885 ms, 42.1033 ms                   | 20.2702 ms, 21.0518 ms
-| 5,000       | 23.853 ms, 164.474 ms                   | 22.508 ms, 82.2372 ms                   | 30.5483 ms, 41.1188 ms
-| 6,000       | 32.066 ms, 284.220 ms                   | 32.537 ms, 142.111 ms                   | 42.3065 ms, 71.0557 ms
-| 7,000       | 43.010 ms, 451.342 ms                   | 41.101 ms, 225.672 ms                   | 49.9254 ms, 112.837 ms
-| 8,000       | 53.917 ms, 673.735 ms                   | 49.607 ms, 336.869 ms                   | 59.6414 ms, 168.435 ms
-| 9,000       | 76.2415 ms, 959.296 ms                  | 73.1496 ms, 479.650 ms                  | 78.4362 ms, 239.826 ms
-| 10,000      | 89.7683 ms, 1.3159 s                    | 84.1125 ms, 657.963 ms                  | 89.8673 ms, 328.984 ms
-| 30,000      | 939.18 ms, 35.5323 s                    | 721.585 ms, 17.7662 s                   | 865.658 ms, 8.8831 s
+| 10          | 9.267 µs, 9.354 µs                      | 63.379 µs, 4.678 µs                     | 45.951 µs, 2.340 µs
+| 100         | 10.76 µs, 979.657 µs                    | 20.479 µs, 489.830 µs                   | 30.529 µs, 244.916 µs
+| 1,000       | 327.51 µs, 98.409 ms                    | 546.37 µs, 49.204 ms                    | 213.171 µs, 24.602 ms
+| 2,000       | 1.4954 ms, 393.734 ms                   | 764.92 µs, 196.867 ms                   | 612.789 µs, 98.433 ms
+| 3,000       | 3.2750 ms, 885.974 ms                   | 1.9989 ms, 442.987 ms                   | 1.31920 ms, 221.494 ms
+| 4,000       | 7.6964 ms, 1.5751 s                     | 3.8310 ms, 787.566 ms                   | 2.67196 ms, 393.783 ms
+| 5,000       | 10.273 ms, 2.4612 s                     | 6.1414 ms, 1.2306 s                     | 3.61441 ms, 615.301 ms
+| 6,000       | 16.129 ms, 3.5442 s                     | 6.7150 ms, 1.7721 s                     | 5.72066 ms, 886.048 ms
+| 7,000       | 21.329 ms, 4.8241 s                     | 11.416 ms, 2.4120 s                     | 7.66839 ms, 1.2060 s
+| 8,000       | 29.898 ms, 6.3009 s                     | 14.586 ms, 3.1505 s                     | 10.6725 ms, 1.5752 s
+| 9,000       | 36.537 ms, 7.9747 s                     | 19.761 ms, 3.9873 s                     | 13.0965 ms, 1.9937 s
+| 10,000      | 43.758 ms, 9.8453 s                     | 25.848 ms, 4.9227 s                     | 17
 
 |===
 
 == Conclusion
 
-In analyzing matrix-vector multiplication, the parallel execution time was initially taken from the first process.
-However, for a more accurate representation of total execution, the maximum time across all processes should be considered,
-requiring code modifications. The difference between serial and parallel execution times is significant, with the
-parallel approach often outperforming the serial, especially for larger matrix sizes. For a 10x10 matrix, there was
-minimal to no speedup due to the overhead of parallelization, which often outweighs the benefits for such small data sizes.
-While theoretical values provide a guideline, they varied significantly from the experimental results. Such incongruities
-can arise from system-specific factors, communication overheads, and the assumptions made in theoretical modeling.
-Future exercises involve exploring different matrix partitioning strategies to further optimize parallel matrix-vector multiplication.
+In our analysis of matrix-vector multiplication using parallel processing, it's evident that the parallel approach can
+significantly outperform the serial approach, especially for larger matrix sizes.
+However, the degree of improvement varies based on the matrix size and the number of processors involved:
+
+- For smaller matrices, such as the 10x10 matrix, the overhead of parallelization is more prominent, resulting in minimal to no speedup.
+This indicates that for trivial tasks, the overhead of parallel execution can outweigh the benefits.
+
+- As the matrix size increases, the benefits of parallel processing become more pronounced. However, even in these cases,
+the speedup doesn't always scale linearly with the number of processors, indicating the presence of other limiting factors.
+
+The comparison of real versus scaled theoretical execution times highlights the discrepancies between idealized models
+and real-world performance. Theoretical models, while valuable for setting benchmarks and expectations, often don't
+capture all the intricacies and overheads of real-world systems.
+
+Such disparities can arise from a variety of factors:
+
+- **Communication Overheads**: As more processors are involved, the need for communication between them can introduce delays.
+
+- **System-Specific Factors**: The actual hardware and software configurations can impact performance.
+Factors like cache sizes, memory bandwidth, and inter-processor communication mechanisms play a role.
+
+- **Model Assumptions**: Theoretical models often make simplifying assumptions that may not hold in real scenarios.
+
+In summary, while parallel processing offers substantial advantages, it's crucial to consider the specific use case and
+the associated overheads. Future investigations might delve into optimizing the parallelization strategy, exploring
+different matrix partitioning techniques, or considering other parallel algorithms to enhance matrix-vector multiplication further.
