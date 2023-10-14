@@ -6,7 +6,7 @@ use lab1::parallel::{
     compute_rows_for_rank, get_dispels, input_size_with_checks,
     process_rows_and_vector_multiplication, result_replication, Error,
 };
-use lab1::serial::{matrix_vector_product, random_data_initialization};
+use lab1::serial::{matrix_vector_product, ref_random_data_initialization};
 
 pub fn main() -> Result<(), Error> {
     let Some(universe) = mpi::initialize() else {
@@ -54,12 +54,12 @@ pub fn main() -> Result<(), Error> {
 fn root_job(world: &SystemCommunicator, size: u64) -> Result<(), Error> {
     let root_process = world.process_at_rank(0);
 
-    let mut matrix: Vec<u64> = vec![];
-    let mut vector: Vec<u64> = vec![];
+    let serial_result = &mut vec![0; size as usize];
 
-    let mut serial_result = vec![0; size as usize];
+    let matrix: &mut Vec<u64> = &mut vec![0; (size * size) as usize];
+    let vector: &mut Vec<u64> = &mut vec![0; size as usize];
 
-    (matrix, vector) = random_data_initialization(size);
+    ref_random_data_initialization(size, matrix, vector);
 
     let process_rank = world.rank();
     let process_count = world.size();
@@ -67,29 +67,39 @@ fn root_job(world: &SystemCommunicator, size: u64) -> Result<(), Error> {
 
     let rows_per_process = compute_rows_for_rank(process_rank, size, process_count, bigger_count);
 
-    let mut global_res = vec![0; size as usize];
-    let mut received_matrix: Vec<u64> = vec![0; (rows_per_process * size as i32) as usize];
+    let global_res = &mut vec![0; size as usize];
+    let received_matrix: &mut Vec<u64> = &mut vec![0; (rows_per_process * size as i32) as usize];
 
     let counts: Vec<i32> = (0..world.size())
         .map(|rank| compute_rows_for_rank(rank, size, process_count, bigger_count) * size as i32)
         .collect();
     let dispels = get_dispels(&counts);
 
-    let partition = Partition::new(&matrix, counts, &dispels[..]);
+    let partition: &Partition<Vec<u64>, Vec<i32>, &[i32]> =
+        &Partition::new(matrix, counts, &dispels[..]);
 
-    root_process.broadcast_into(&mut vector);
-
-    root_process.scatter_varcount_into_root(&partition, &mut received_matrix[..]);
+    let request_start = mpi::time();
+    mpi::request::scope(|scope| {
+        root_process
+            .immediate_scatter_varcount_into_root(scope, partition, received_matrix)
+            .wait_without_status();
+        root_process
+            .immediate_broadcast_into(scope, vector)
+            .wait_without_status();
+    });
+    println!(
+        "Time elapsed in data_distribution() is: {:?}",
+        mpi::time() - request_start
+    );
     let t_start = mpi::time();
+    let mul_res = process_rows_and_vector_multiplication(received_matrix, vector);
 
-    let mul_res = process_rows_and_vector_multiplication(&received_matrix, &vector);
-
-    result_replication(&mul_res, &mut global_res, size, &world);
+    result_replication(&mul_res, global_res, size, world);
     let duration = mpi::time() - t_start;
 
-    serial_result = matrix_vector_product(&matrix, &vector);
+    *serial_result = matrix_vector_product(matrix, vector);
 
-    test_result(serial_result.as_slice(), &global_res, size);
+    test_result(serial_result.as_slice(), global_res, size);
 
     println!(
         "Time elapsed in parallel matrix_vector_product() is: {:?}",
@@ -107,18 +117,24 @@ fn root_job(world: &SystemCommunicator, size: u64) -> Result<(), Error> {
 fn worker_job(
     world: &SystemCommunicator,
     vector: &mut Vec<u64>,
-    received_matrix: &mut Vec<u64>,
+    received_matrix: &mut [u64],
     global_res: &mut Vec<u64>,
     size: u64,
 ) -> Result<(), Error> {
     let root_process = world.process_at_rank(0);
 
-    root_process.broadcast_into(vector);
-    root_process.scatter_varcount_into(received_matrix);
+    mpi::request::scope(|scope| {
+        root_process
+            .immediate_scatter_varcount_into(scope, &mut received_matrix[..])
+            .wait_without_status();
+        root_process
+            .immediate_broadcast_into(scope, vector)
+            .wait_without_status();
+    });
 
-    let mul_res = process_rows_and_vector_multiplication(&received_matrix, &vector);
+    let mul_res = process_rows_and_vector_multiplication(received_matrix, vector);
 
-    result_replication(&mul_res, global_res, size, &world);
+    result_replication(&mul_res, global_res, size, world);
 
     Ok(())
 }

@@ -47,34 +47,6 @@ pub fn input_size_with_checks(process_number: u32) -> Result<u64, std::io::Error
     Ok(size)
 }
 
-// pub fn data_distribution(
-//     flatten_matrix: &mut [u64],
-//     vector: &mut Vec<u64>,
-//     size: u64,
-//     world: &SystemCommunicator,
-//     received_matrix: &mut Vec<u64>,
-// ) {
-//     let root_process = world.process_at_rank(0);
-//     root_process.broadcast_into(vector);
-//
-//     if world.rank() == 0 {
-//         let process_count = world.size();
-//         let bigger_count = size as i32 % process_count;
-//
-//         let counts: Vec<i32> = (0..world.size())
-//             .map(|rank| {
-//                 compute_rows_for_rank(rank, size, process_count, bigger_count) * size as i32
-//             })
-//             .collect();
-//         let dispels: Vec<i32> = get_dispels(&counts);
-//
-//         let partition = Partition::new(flatten_matrix, counts, &dispels[..]);
-//         root_process.scatter_varcount_into_root(&partition, &mut received_matrix[..]);
-//     } else {
-//         root_process.scatter_varcount_into(received_matrix);
-//     }
-// }
-
 pub fn process_rows_and_vector_multiplication(
     flatten_matrix_stripe: &[u64],
     vector: &[u64],

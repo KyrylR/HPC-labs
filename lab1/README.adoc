@@ -96,6 +96,8 @@ Based on the theoretical analysis and the provided pivot experiment result, the 
 
 == Parallel Execution Times in comparison to Serial Execution Time
 
+> Data distribution is not counted.
+
 [cols="2,2,2,2,2"]
 |===
 | Matrix Size | Serial       | 2 processors | 4 processors | 8 processors
