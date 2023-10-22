@@ -2,7 +2,8 @@
 resolver = "2"
 
 members = [
-  "lab1"
+  "lab1",
+  "lab2"
 ]
 
 [workspace.dependencies]

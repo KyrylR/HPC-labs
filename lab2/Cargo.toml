@@ -1,5 +1,5 @@
 [package]
-name = "lab1"
+name = "lab2"
 version = "0.1.0"
 edition = "2021"
 
@@ -12,15 +12,13 @@ criterion = { workspace = true }
 thiserror = { workspace = true }
 mpi = { workspace = true }
 
-[[bench]]
-name = "bench"
-path = "benches/bench.rs"
-harness = false
+lab1 = { path = "../lab1", version = "0.1.0" }
+
 
 [[example]]
-name = "lab1_serial"
+name = "lab2_serial"
 path = "examples/serial.rs"
 
 [[example]]
-name = "lab1_parallel"
+name = "lab2_parallel"
 path = "examples/parallel.rs"
