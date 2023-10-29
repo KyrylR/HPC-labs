@@ -6,9 +6,7 @@ The Fox Algorithm for matrix multiplication is a parallel algorithm that divides
 
 The theoretical execution time of the parallel Fox Algorithm is given by the formula:
 
-\[
-T_p = q \left[ \frac{n^2}{p} \left( \frac{2n}{q - 1} \right) + \frac{n^2}{p} \right] \tau + \left( q\log_2(q) + (q - 1) \right) \left( \alpha + w \left( \frac{n^2}{p} \right) \frac{1}{\beta} \right)
-\]
+latexmath:[ T_p = q \left\{ \frac{n^2}{p} \left( \frac{2n}{q - 1} \right) + \frac{n^2}{p} \right\} \tau + \left( q\log_2(q) + (q - 1) \right) \left( \alpha + w \left( \frac{n^2}{p} \right) \frac{1}{\beta} \right) ]
 
 Where:
 - latexmath:[ n ] is the matrix size.
