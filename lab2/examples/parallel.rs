@@ -6,7 +6,7 @@ use mpi::topology::{CartesianCommunicator, SystemCommunicator};
 use lab1::parallel::Error;
 
 use lab2::parallel::{create_grid_communicator, input_size_with_checks};
-use lab2::serial::{dummy_data_init, matrix_matrix_product};
+use lab2::serial::{random_data_initialization, matrix_matrix_product};
 
 pub fn main() -> Result<(), Error> {
     let Some(universe) = mpi::initialize() else {
@@ -46,11 +46,12 @@ pub fn main() -> Result<(), Error> {
     if world.rank() == 0 {
         *c_matrix = vec![0_u64; (size * size) as usize];
 
-        (a_matrix, b_matrix) = dummy_data_init(size);
+        (a_matrix, b_matrix) = random_data_initialization(size);
     }
 
     let (coords, row_comm, col_comm) = create_grid_communicator(grid_size, &world);
 
+    let t_start = mpi::time();
     // Data distribution
     checkerboard_matrix_scatter(
         &a_matrix,
@@ -91,6 +92,10 @@ pub fn main() -> Result<(), Error> {
     );
 
     if world.rank() == 0 {
+        println!(
+            "Time elapsed in parallel matrix_matrix_product() is: {:?}",
+            mpi::time() - t_start
+        );
         test_result(&a_matrix, &b_matrix, c_matrix, size);
     }
 
