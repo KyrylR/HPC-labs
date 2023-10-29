@@ -34,14 +34,19 @@ pub fn dummy_data_init(size: u64) -> (Vec<u64>, Vec<u64>) {
     (m, v)
 }
 
-pub fn print_matrix(m: &[u64], size: u64) {
+pub fn print_matrix<T>(m: &[T], size: usize)
+where
+    T: std::fmt::Display + Copy,
+{
     println!("Matrix:");
 
-    m.chunks(size as usize)
-        .for_each(|row| print_vector(&row.to_vec()));
+    m.chunks(size).for_each(|row| print_vector(&row.to_vec()));
 }
 
-pub fn print_vector(v: &Vec<u64>) {
+pub fn print_vector<T>(v: &Vec<T>)
+where
+    T: std::fmt::Display + Copy,
+{
     for col in v {
         print!("{} ", col);
     }
