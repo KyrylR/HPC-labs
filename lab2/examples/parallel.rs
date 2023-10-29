@@ -1,12 +1,12 @@
-use mpi::Count;
-use mpi::traits::*;
-use mpi::point_to_point::{send_receive_replace_into};
+use mpi::point_to_point::send_receive_replace_into;
 use mpi::topology::{CartesianCommunicator, SystemCommunicator};
+use mpi::traits::*;
+use mpi::Count;
 
 use lab1::parallel::Error;
 
 use lab2::parallel::{create_grid_communicator, input_size_with_checks};
-use lab2::serial::{random_data_initialization, matrix_matrix_product};
+use lab2::serial::{matrix_matrix_product, random_data_initialization};
 
 pub fn main() -> Result<(), Error> {
     let Some(universe) = mpi::initialize() else {
@@ -110,7 +110,7 @@ fn parallel_result_calculation(
     grid_size: u64,
     coords: &[Count],
     row_comm: &CartesianCommunicator,
-    col_comm: &CartesianCommunicator
+    col_comm: &CartesianCommunicator,
 ) {
     let mut p_a_block = vec![0_u64; (block_size * block_size) as usize];
     // Function for parallel execution of the Fox method
@@ -118,8 +118,8 @@ fn parallel_result_calculation(
         // Sending blocks of matrix A to the process grid rows
         a_block_communication(
             iter,
-            p_matrix_a_block,
             &mut p_a_block,
+            p_matrix_a_block,
             block_size,
             grid_size,
             coords,
@@ -136,8 +136,8 @@ fn parallel_result_calculation(
 
 fn a_block_communication(
     iter: u64,
-    p_matrix_a_block: &mut [u64],
     p_a_block: &mut [u64],
+    p_matrix_a_block: &mut [u64],
     block_size: u64,
     grid_size: u64,
     cords: &[Count],
@@ -154,9 +154,9 @@ fn a_block_communication(
     }
 
     // Block broadcasting
-    let root_process = row_comm.process_at_rank(pivot as i32);
-
-    root_process.broadcast_into(&mut p_a_block[..]);
+    row_comm
+        .process_at_rank(pivot as i32)
+        .broadcast_into(&mut p_a_block[..]);
 }
 
 fn b_block_communication(
@@ -177,8 +177,8 @@ fn b_block_communication(
 
     send_receive_replace_into(
         p_b_block,
-        &col_comm.process_at_rank(next_process),
         &col_comm.process_at_rank(prev_process),
+        &col_comm.process_at_rank(next_process),
     );
 }
 

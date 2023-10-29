@@ -16,10 +16,10 @@ pub fn random_data_initialization(size: u64) -> (Vec<u64>, Vec<u64>) {
     let mut rng = rand::thread_rng();
 
     let vector: Vec<u64> = (0..size * size)
-        .map(|_| rng.gen_range(0_u64..u32::MAX as u64))
+        .map(|_| rng.gen_range(0_u64..u16::MAX as u64))
         .collect();
     let matrix: Vec<u64> = (0..size * size)
-        .map(|_| rng.gen_range(0_u64..u32::MAX as u64))
+        .map(|_| rng.gen_range(0_u64..u16::MAX as u64))
         .collect();
 
     (matrix, vector)
