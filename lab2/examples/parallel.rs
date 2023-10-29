@@ -1,7 +1,7 @@
-use mpi::point_to_point::{send_receive_replace_into, Status};
-use mpi::topology::{CartesianCommunicator, SystemCommunicator};
-use mpi::traits::*;
 use mpi::Count;
+use mpi::traits::*;
+use mpi::point_to_point::{send_receive_replace_into};
+use mpi::topology::{CartesianCommunicator, SystemCommunicator};
 
 use lab1::parallel::Error;
 
@@ -41,19 +41,12 @@ pub fn main() -> Result<(), Error> {
 
     let mut a_matrix: Vec<u64> = vec![0_u64];
     let mut b_matrix: Vec<u64> = vec![0_u64];
-    let mut c_matrix: &mut Vec<u64> = &mut vec![0_u64];
+    let c_matrix: &mut Vec<u64> = &mut vec![0_u64];
 
     if world.rank() == 0 {
         *c_matrix = vec![0_u64; (size * size) as usize];
 
         (a_matrix, b_matrix) = dummy_data_init(size);
-    }
-
-    if world.rank() == 0 {
-        println!("Matrix A:");
-        lab1::serial::print_matrix(&a_matrix, size as usize);
-        println!("Matrix B:");
-        lab1::serial::print_matrix(&b_matrix, size as usize);
     }
 
     let (coords, row_comm, col_comm) = create_grid_communicator(grid_size, &world);
@@ -80,14 +73,9 @@ pub fn main() -> Result<(), Error> {
         &col_comm,
     );
 
-    println!();
-    test_blocks(&a_block, block_size, "Initial blocks of matrix A", &world);
-    test_blocks(&b_block, block_size, "Initial blocks of matrix B", &world);
-
     // Parallel result calculation
     parallel_result_calculation(
         &mut a_block,
-        &a_matrix,
         &mut b_block,
         &mut c_block,
         block_size,
@@ -95,9 +83,7 @@ pub fn main() -> Result<(), Error> {
         &coords,
         &row_comm,
         &col_comm,
-        &world,
     );
-    test_blocks(&c_block, block_size, "Block of C matrix", &world);
 
     // Gathering the result matrix
     result_collection(
@@ -105,73 +91,55 @@ pub fn main() -> Result<(), Error> {
     );
 
     if world.rank() == 0 {
-        println!("Matrix C:");
-        lab1::serial::print_matrix(c_matrix, size as usize);
+        test_result(&a_matrix, &b_matrix, c_matrix, size);
     }
-
-    test_result(&a_matrix, &b_matrix, c_matrix, size);
 
     Ok(())
 }
 
 fn parallel_result_calculation(
-    p_a_block: &mut Vec<u64>,
-    p_matrix_a_block: &[u64],
+    p_matrix_a_block: &mut [u64],
     p_b_block: &mut Vec<u64>,
-    p_c_block: &mut Vec<u64>,
+    p_c_block: &mut [u64],
     block_size: u64,
     grid_size: u64,
-    coords: &Vec<Count>,
+    coords: &[Count],
     row_comm: &CartesianCommunicator,
-    col_comm: &CartesianCommunicator,
-    world: &SystemCommunicator,
+    col_comm: &CartesianCommunicator
 ) {
+    let mut p_a_block = vec![0_u64; (block_size * block_size) as usize];
     // Function for parallel execution of the Fox method
     for iter in 0..grid_size {
         // Sending blocks of matrix A to the process grid rows
         a_block_communication(
             iter,
-            p_a_block,
             p_matrix_a_block,
+            &mut p_a_block,
             block_size,
             grid_size,
-            &coords,
-            &row_comm,
+            coords,
+            row_comm,
         );
 
-        if iter > 0 {
-            println!("Iteration number {}", iter);
-        }
-        test_blocks(p_a_block, block_size, "Block of A matrix", &world);
-
         // Block multiplication
-        block_multiplication(p_a_block, p_b_block, p_c_block, block_size);
-
-        if iter > 0 {
-            println!("Iteration number {}", iter);
-        }
-        test_blocks(p_b_block, block_size, "Block of B matrix", &world);
+        block_multiplication(&p_a_block, p_b_block, p_c_block, block_size);
 
         // Cyclic shift of blocks of matrix B in process grid columns
-        b_block_communication(p_b_block, &coords, grid_size, block_size, &col_comm, &world);
+        b_block_communication(p_b_block, coords, grid_size, col_comm);
     }
 }
 
 fn a_block_communication(
     iter: u64,
-    p_a_block: &mut Vec<u64>,
-    p_matrix_a_block: &[u64],
+    p_matrix_a_block: &mut [u64],
+    p_a_block: &mut [u64],
     block_size: u64,
     grid_size: u64,
-    cords: &Vec<Count>,
+    cords: &[Count],
     row_comm: &CartesianCommunicator,
 ) {
     // Defining the leading process of the process grid row
     let pivot = (iter + cords[0] as u64) % grid_size;
-
-    println!("Pivot = {}", pivot);
-    println!("P A Block = {:?}", p_a_block);
-    println!("P Matrix A Block = {:?}", p_matrix_a_block);
 
     // Copying the transmitted block in a separate memory buffer
     if cords[1] as u64 == pivot {
@@ -188,11 +156,9 @@ fn a_block_communication(
 
 fn b_block_communication(
     p_b_block: &mut Vec<u64>,
-    cords: &Vec<Count>,
+    cords: &[Count],
     grid_size: u64,
-    block_size: u64,
     col_comm: &CartesianCommunicator,
-    world: &SystemCommunicator,
 ) {
     let mut next_process = cords[0] + 1;
     if cords[0] == grid_size as i32 - 1 {
@@ -206,15 +172,15 @@ fn b_block_communication(
 
     send_receive_replace_into(
         p_b_block,
-        &world.process_at_rank(next_process),
-        &world.process_at_rank(prev_process),
+        &col_comm.process_at_rank(next_process),
+        &col_comm.process_at_rank(prev_process),
     );
 }
 
 fn block_multiplication(
     p_a_block: &[u64],
     p_b_block: &[u64],
-    p_c_block: &mut Vec<u64>,
+    p_c_block: &mut [u64],
     block_size: u64,
 ) {
     for i in 0..block_size {
@@ -233,7 +199,7 @@ fn result_collection(
     p_c_block: &[u64],
     size: u64,
     block_size: u64,
-    coords: &Vec<Count>,
+    coords: &[Count],
     world: &SystemCommunicator,
     row_comm: &CartesianCommunicator,
     col_comm: &CartesianCommunicator,
@@ -288,10 +254,10 @@ fn test_result(p_a_matrix: &[u64], p_b_matrix: &[u64], p_c_matrix: &[u64], size:
 
 fn checkerboard_matrix_scatter(
     p_matrix: &[u64],
-    p_matrix_block: &mut Vec<u64>,
+    p_matrix_block: &mut [u64],
     size: u64,
     block_size: u64,
-    coords: &Vec<Count>,
+    coords: &[Count],
     world: &SystemCommunicator,
     row_comm: &CartesianCommunicator,
     col_comm: &CartesianCommunicator,
@@ -324,7 +290,7 @@ fn checkerboard_matrix_scatter(
     }
 }
 
-fn test_blocks(p_block: &[u64], block_size: u64, str: &str, world: &SystemCommunicator) {
+pub fn test_blocks(p_block: &[u64], block_size: u64, str: &str, world: &SystemCommunicator) {
     world.barrier();
 
     if world.rank() == 0 {
@@ -334,7 +300,7 @@ fn test_blocks(p_block: &[u64], block_size: u64, str: &str, world: &SystemCommun
     for i in 0..world.size() {
         if world.rank() == i {
             println!("ProcRank = {}", world.rank());
-            lab1::serial::print_matrix(&p_block, block_size as usize);
+            lab1::serial::print_matrix(p_block, block_size as usize);
         }
 
         world.barrier();
