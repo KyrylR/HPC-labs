@@ -1,0 +1,113 @@
+= Fox Algorithm for Matrix Multiplication: Execution Time Assessment
+
+== Introduction
+
+The Fox Algorithm for matrix multiplication is a parallel algorithm that divides the matrix into smaller blocks and performs multiplication in a way that minimizes communication between processes. The execution time for the Fox Algorithm can be affected by various factors including the size of the matrix, the number of processes used, and the characteristics of the network.
+
+The theoretical execution time of the parallel Fox Algorithm is given by the formula:
+
+\[
+T_p = q \left[ \frac{n^2}{p} \left( \frac{2n}{q - 1} \right) + \frac{n^2}{p} \right] \tau + \left( q\log_2(q) + (q - 1) \right) \left( \alpha + w \left( \frac{n^2}{p} \right) \frac{1}{\beta} \right)
+\]
+
+Where:
+- latexmath:[ n ] is the matrix size.
+- latexmath:[ p ] is the number of processes.
+- latexmath:[ q ] is the size of the processor grid.
+- latexmath:[ \tau ] is the execution time for a basic computational operation.
+- latexmath:[ \alpha ] is the latency of the data transmission network.
+- latexmath:[ \beta ] is the bandwidth of the data transmission network.
+- latexmath:[ w ] is the size of the data transmitted.
+
+== Results
+
+=== Theoretical Execution Time Calculation
+
+The execution time for a basic computational operation latexmath:[ \tau ] is derived from a pivot experiment. Once we have the value of latexmath:[ \tau ], we can use it to calculate the theoretical execution time latexmath:[ T_p ] for the Fox Algorithm for various matrix sizes and numbers of processes.
+
+Estimated constants with typical values:
+
+- latexmath:[ \tau ]: Execution time for a basic computational operation. We can estimate this value based on the serial execution time for the smallest matrix size (10x10) divided by the number of operations required for matrix multiplication of that size, which is \(10^3\).
+- latexmath:[ \alpha ]: Latency of the data transmission network. A typical value for a local area network (LAN) is around 0.5 microseconds (0.5e-6 seconds).
+- latexmath:[ \beta ]: Bandwidth of the data transmission network. A typical value for a LAN is around 1 Gbps, or \(1e9\) bits per second.
+- latexmath:[ w ]: Size of the data transmitted. We can estimate this value to be proportional to the matrix size, with a proportionality constant of 1.
+
+.Serial Algorithm Execution Time
+[cols="1,1"]
+|===
+| Matrix Size | Theoretical Execution Time (seconds)
+| 10          | 2.746 µs
+| 100         | 896.385 µs
+| 500         | 143.826048 ms
+| 1000        | 1.270978997 s
+| 1500        | 6.17591268 s
+| 2000        | 13.58250998 s
+| 2500        | 29.56539837 s
+| 3000        | 43.61642732 s
+|===
+
+=== Comparison of Theoretical and Experimental Execution Times
+
+This section will compare the theoretical execution times calculated using the formula with the experimental execution times obtained by running the Fox Algorithm on a compute cluster.
+
+.Comparison of Theoretical and Experimental Execution Times
+[cols="2,2,3"]
+|===
+| Matrix Size | Theoretical Execution Time | Experimental Execution Time
+| 10          | 4.98 × 10^-6 seconds        | 27.333 µs
+| 100         | 0.0028 seconds              | 525.005 µs
+| 500         | 0.345 seconds               | 45.922397 ms
+| 1000        | 2.75 seconds                | 381.709427 ms
+| 1500        | 9.28 seconds                | 2.222007792 s
+| 2000        | 21.99 seconds               | 3.989386267 s
+| 2500        | 42.95 seconds               | 11.995081878 s
+| 3000        | 74.21 seconds               | 16.456966797 s
+|===
+
+== Parallel Execution Times in comparison to Serial Execution Time
+
+This section will compare the execution times of the parallel Fox Algorithm with the execution time of the serial algorithm for various matrix sizes.
+
+[cols="2,2,2,2"]
+|===
+| Matrix Size | Serial       | 4 processors    | 9 processors
+| 10          | 2.746 µs      | 27.333 µs         | 111.003 µs
+| 100         | 896.385 µs    | 525.005 µs           | 596.638 µs
+| 500         | 143.826048 ms | 45.922397 ms         | 35.630138 ms
+| 1000        | 1.270978997 s | 381.709427 ms         | 312.616631 ms
+| 1500        | 6.17591268 s  | 2.222007792 s          | 1.417748462 s
+| 2000        | 13.58250998 s | 3.989386267 s          | 5.634880453 s
+| 2500        | 29.56539837 s | 11.995081878 s          | 9.756834239 s
+| 3000        | 43.61642732 s | 16.456966797 s          | 11.011420081 s
+|===
+
+== Speedup in comparison to Serial Execution Time
+
+This section will calculate the speedup achieved by the parallel Fox Algorithm compared to the serial algorithm for various matrix sizes.
+
+[cols="2,2,2"]
+|===
+| Matrix Size | 4 processors | 9 processors
+| 10          | 0.1           | 0.02
+|
+
+ 100         | 1.71          | 1.5
+| 500         | 3.13          | 4.04
+| 1000        | 3.33          | 4.07
+| 1500        | 2.78          | 4.36
+| 2000        | 3.40          | 2.41
+| 2500        | 2.47          | 3.03
+| 3000        | 2.65          | 3.96
+|===
+
+== Analysis and Conclusion
+
+In this report, we analyzed the execution time of the Fox Algorithm for matrix multiplication, both in its serial and parallel forms. The theoretical execution times were calculated using the provided formula and then compared to the experimental execution times obtained by running the Fox Algorithm on a compute cluster. The speedup achieved by the parallel algorithm compared to the serial algorithm was also calculated.
+
+From the data and calculations, we can make the following observations:
+
+1. The theoretical execution time and the experimental execution time are not always consistent. This discrepancy might be due to the assumptions and estimations made when calculating the theoretical execution time, such as the values of the constants (\(\tau\), \(\alpha\), \(\beta\), and \(w\)).
+
+2. The speedup achieved by the parallel algorithm compared to the serial algorithm is significant for larger matrix sizes, with the highest speedup observed for a matrix size of 1500x1500 with 9 processors. However, it is interesting to note that the speedup is not always proportional to the number of processors, and in some cases, the speedup is less than expected. This could be due to the overhead of communication between processors, which becomes more significant as the number of processors increases.
+
+Overall, the parallel Fox Algorithm shows promise in reducing execution time for matrix multiplication, especially for larger matrix sizes. However, further investigation is needed to understand the factors affecting the execution time and speedup, such as the characteristics of the network or the compute cluster configuration. Future studies should also explore ways to minimize the communication overhead between processors to achieve better performance.
