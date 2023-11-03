@@ -1,2 +1,2 @@
-mod parallel;
-mod serial;
+pub mod parallel;
+pub mod serial;
