@@ -1,0 +1,24 @@
+[package]
+name = "lab6"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = { workspace = true }
+once_cell = { workspace = true }
+criterion = { workspace = true }
+thiserror = { workspace = true }
+mpi = { workspace = true }
+
+lab1 = { path = "../lab1", version = "0.1.0" }
+
+
+[[example]]
+name = "lab6_serial"
+path = "examples/serial.rs"
+
+[[example]]
+name = "lab6_parallel"
+path = "examples/parallel.rs"
