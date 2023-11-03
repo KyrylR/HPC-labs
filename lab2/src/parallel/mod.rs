@@ -1,10 +1,10 @@
 use lab1::common::input_size;
-use mpi::topology::{CartesianCommunicator, Communicator, SystemCommunicator};
+use mpi::topology::{CartesianCommunicator, Communicator, SimpleCommunicator};
 use mpi::Count;
 
 pub fn create_grid_communicator(
     grid_size: u64,
-    world: &SystemCommunicator,
+    world: &SimpleCommunicator,
 ) -> (Vec<Count>, CartesianCommunicator, CartesianCommunicator) {
     let dims = [grid_size as mpi::Count, grid_size as mpi::Count];
     let periodic = [true, true];

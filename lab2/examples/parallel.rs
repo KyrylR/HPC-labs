@@ -1,5 +1,5 @@
 use mpi::point_to_point::send_receive_replace_into;
-use mpi::topology::{CartesianCommunicator, SystemCommunicator};
+use mpi::topology::{CartesianCommunicator, SimpleCommunicator};
 use mpi::traits::*;
 use mpi::Count;
 
@@ -205,7 +205,7 @@ fn result_collection(
     size: u64,
     block_size: u64,
     coords: &[Count],
-    world: &SystemCommunicator,
+    world: &SimpleCommunicator,
     row_comm: &CartesianCommunicator,
     col_comm: &CartesianCommunicator,
 ) {
@@ -263,7 +263,7 @@ fn checkerboard_matrix_scatter(
     size: u64,
     block_size: u64,
     coords: &[Count],
-    world: &SystemCommunicator,
+    world: &SimpleCommunicator,
     row_comm: &CartesianCommunicator,
     col_comm: &CartesianCommunicator,
 ) {
@@ -295,7 +295,7 @@ fn checkerboard_matrix_scatter(
     }
 }
 
-pub fn test_blocks(p_block: &[u64], block_size: u64, str: &str, world: &SystemCommunicator) {
+pub fn test_blocks(p_block: &[u64], block_size: u64, str: &str, world: &SimpleCommunicator) {
     world.barrier();
 
     if world.rank() == 0 {

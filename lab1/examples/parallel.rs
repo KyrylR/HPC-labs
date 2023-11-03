@@ -1,5 +1,5 @@
 use mpi::datatype::Partition;
-use mpi::topology::SystemCommunicator;
+use mpi::topology::SimpleCommunicator;
 use mpi::traits::*;
 
 use lab1::parallel::{
@@ -51,7 +51,7 @@ pub fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn root_job(world: &SystemCommunicator, size: u64) -> Result<(), Error> {
+fn root_job(world: &SimpleCommunicator, size: u64) -> Result<(), Error> {
     let root_process = world.process_at_rank(0);
 
     let serial_result = &mut vec![0; size as usize];
@@ -115,7 +115,7 @@ fn root_job(world: &SystemCommunicator, size: u64) -> Result<(), Error> {
 }
 
 fn worker_job(
-    world: &SystemCommunicator,
+    world: &SimpleCommunicator,
     vector: &mut Vec<u64>,
     received_matrix: &mut [u64],
     global_res: &mut Vec<u64>,

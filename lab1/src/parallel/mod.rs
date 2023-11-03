@@ -1,5 +1,5 @@
 use mpi::datatype::PartitionMut;
-use mpi::topology::SystemCommunicator;
+use mpi::topology::SimpleCommunicator;
 use mpi::traits::*;
 
 use crate::common::input_size;
@@ -7,7 +7,7 @@ pub use crate::parallel::error::Error;
 
 mod error;
 
-pub fn init_program() -> Result<SystemCommunicator, Error> {
+pub fn init_program() -> Result<SimpleCommunicator, Error> {
     let Some(universe) = mpi::initialize() else {
         return Err(Error::Mpi);
     };
@@ -61,7 +61,7 @@ pub fn result_replication(
     p_proc_result: &[u64],
     p_result: &mut Vec<u64>,
     size: u64,
-    world: &SystemCommunicator,
+    world: &SimpleCommunicator,
 ) {
     let process_count = world.size();
     let bigger_count = size as i32 % process_count;
