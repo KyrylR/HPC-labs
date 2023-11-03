@@ -113,20 +113,10 @@ fn main() {
     // Memory allocation and definition of objects' elements
     let (mut matrix, mut vector) = process_initialization(size);
 
-    // The matrix and the vector output
-    println!("Initial Matrix");
-    print_matrix(&matrix, size, size);
-    println!("Initial Vector");
-    print_vector(&vector);
-
     // Execution of the Gauss algorithm
     let start = Instant::now();
-    let result = serial_result_calculation(&mut matrix, &mut vector, size);
+    let _result = serial_result_calculation(&mut matrix, &mut vector, size);
     let duration = start.elapsed();
-
-    // Printing the result vector
-    println!("\nResult Vector:");
-    print_vector(&result);
 
     // Printing the execution time of the Gauss method
     println!("\nTime of execution: {:?}", duration);
