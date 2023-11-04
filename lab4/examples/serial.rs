@@ -1,5 +1,5 @@
 use std::io;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 const RANDOM_DATA_MULTIPLIER: f64 = 1000.0;
 
@@ -9,16 +9,10 @@ fn main() {
     // Process initialization
     let mut data = process_initialization();
 
-    println!("Data before sorting");
-    print_data(&data);
-
     // Serial bubble sort
     let start = Instant::now();
     serial_bubble_sort(&mut data);
     let duration = start.elapsed();
-
-    println!("Data after sorting");
-    print_data(&data);
 
     println!("Time of execution: {:?}", duration);
 }
@@ -46,15 +40,12 @@ fn process_initialization() -> Vec<f64> {
     random_data_initialization(data_size)
 }
 
-// Function for simple setting the initial data
-fn dummy_data_initialization(data_size: usize) -> Vec<f64> {
+pub fn dummy_data_initialization(data_size: usize) -> Vec<f64> {
     (1..=data_size).rev().map(|i| i as f64).collect()
 }
 
-// Function for initializing the data by the random generator
 fn random_data_initialization(data_size: usize) -> Vec<f64> {
     let mut data = vec![0.0; data_size];
-    let mut rng = rand::thread_rng();
     for element in &mut data {
         *element = rand::random::<f64>() * RANDOM_DATA_MULTIPLIER;
     }
@@ -76,15 +67,13 @@ fn serial_bubble_sort(data: &mut [f64]) {
     }
 }
 
-// Function for formatted data output
-fn print_data(data: &[f64]) {
+pub fn print_data(data: &[f64]) {
     for &value in data {
         print!("{:7.4} ", value);
     }
     println!();
 }
 
-// Sorting by the standard library algorithm
-fn serial_std_sort(data: &mut [f64]) {
+pub fn serial_std_sort(data: &mut [f64]) {
     data.sort_by(|a, b| a.partial_cmp(b).unwrap());
 }
