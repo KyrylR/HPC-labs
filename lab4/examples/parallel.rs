@@ -31,13 +31,13 @@ fn main() -> Result<(), Error> {
 
     let data = if rank == 0 {
         let mut rng = rand::thread_rng();
-        (0..data_size).map(|_| rng.gen_range(0.0..1000.0)).collect()
+        (0..data_size).map(|_| rng.gen_range(0..1000)).collect()
     } else {
-        vec![0.0; data_size as usize]
+        vec![0; data_size as usize]
     };
 
     let block_size = data_size / size as u64;
-    let mut proc_data = vec![0.0; block_size as usize];
+    let mut proc_data = vec![0; block_size as usize];
 
     if rank == 0 {
         println!("Sorting {} data items", data_size);
@@ -72,13 +72,12 @@ fn main() -> Result<(), Error> {
 
     if rank == 0 {
         println!("Time of execution: {:?}", duration);
-        println!("Sorted data: {:?}", gathered_data.unwrap());
     }
 
     Ok(())
 }
 
-fn parallel_bubble_sort(world: &SimpleCommunicator, proc_data: &mut [f64]) {
+fn parallel_bubble_sort(world: &SimpleCommunicator, proc_data: &mut [u64]) {
     let rank = world.rank();
     let size = world.size();
 
@@ -106,7 +105,7 @@ fn parallel_bubble_sort(world: &SimpleCommunicator, proc_data: &mut [f64]) {
             continue;
         }
 
-        let mut partner_data = vec![0.0; proc_data.len()];
+        let mut partner_data = vec![0; proc_data.len()];
         let partner_rank = partner as usize;
 
         mpi::request::scope(|scope| {
@@ -132,7 +131,7 @@ fn parallel_bubble_sort(world: &SimpleCommunicator, proc_data: &mut [f64]) {
     }
 }
 
-fn bubble_sort(data: &mut [f64]) {
+fn bubble_sort(data: &mut [u64]) {
     let mut swapped = true;
     while swapped {
         swapped = false;
@@ -145,7 +144,7 @@ fn bubble_sort(data: &mut [f64]) {
     }
 }
 
-fn merge(left: &[f64], right: &[f64]) -> Vec<f64> {
+fn merge(left: &[u64], right: &[u64]) -> Vec<u64> {
     let mut merged = Vec::with_capacity(left.len() + right.len());
     let mut left_iter = left.iter();
     let mut right_iter = right.iter();
