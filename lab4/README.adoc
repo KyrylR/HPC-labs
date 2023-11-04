@@ -4,7 +4,7 @@
 :toc-title:
 :table-caption!:
 :figures-caption!:
-:author: Your Name
+:author: Kyrylo Riabo
 :revdate: {docdate}
 
 toc::[]
@@ -165,9 +165,8 @@ The number of processors varied among 2, 4, and 8 to observe the differences in 
 
 The theoretical model for parallel execution time, given by the formula
 
-\[
-T_p = \left( \frac{n}{p} \log_2 \left( \frac{n}{p} \right) + 2n \right) \tau + p \left( \alpha + \frac{w \cdot \frac{n}{p}}{\beta} \right)
-\]
+latexmath:[
+T_p = \left( \frac{n}{p} \log_2 \left( \frac{n}{p} \right) + 2n \right) \tau + p \left( \alpha + \frac{w \cdot \frac{n}{p}}{\beta} \right) ]
 
 [cols="1,1,2,2,2,2,2,2", options="header"]
 |===
