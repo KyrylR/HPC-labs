@@ -13,8 +13,16 @@ fn main() {
     let start = Instant::now();
     serial_bubble_sort(&mut data);
     let duration = start.elapsed();
+    println!(
+        "Time of execution of custom serial bubble sort: {:?}",
+        duration
+    );
 
-    println!("Time of execution: {:?}", duration);
+    // Serial std sort
+    let start = Instant::now();
+    serial_std_sort(&mut data);
+    let duration = start.elapsed();
+    println!("Time of execution of serial std sort: {:?}", duration);
 }
 
 // Function for allocating the memory and setting the initial values
@@ -52,16 +60,11 @@ fn random_data_initialization(data_size: usize) -> Vec<f64> {
     data
 }
 
-// Function for the serial bubble sort algorithm
 fn serial_bubble_sort(data: &mut [f64]) {
-    let mut tmp;
-    let data_size = data.len();
-    for i in 1..data_size {
-        for j in 0..data_size - i {
+    for i in 0..data.len() {
+        for j in 0..data.len() - 1 - i {
             if data[j] > data[j + 1] {
-                tmp = data[j];
-                data[j] = data[j + 1];
-                data[j + 1] = tmp;
+                data.swap(j, j + 1);
             }
         }
     }
