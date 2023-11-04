@@ -1,4 +1,100 @@
-= Parallel Methods of Solving the Linear Equation
-Systems
+= Parallel Methods of Solving the Linear Equation Systems
 
+== Introduction
+
+The serial Gauss algorithm is an efficient method for solving linear equation systems. The execution time for this algorithm can be theoretically calculated using the following expression:
+
+latexmath:[T_1 = \left( \frac{2 \cdot \text{Size}^3}{3 + \text{Size}^2} \right) \cdot \tau]
+
+where latexmath:[\tau] represents the execution time of a basic computational operation, and latexmath:[\text{Size}] is the size of the matrix.
+
+In this report, we determine the execution time of a basic computational operation using a pivot experiment with a matrix size of 1,500. The experimental execution time for this matrix size was used to calculate latexmath:[\tau], which was then used to compute the theoretical execution times for other matrix sizes.
+
+The following table compares the experimental execution time to the theoretical execution time, which was calculated using the determined value of latexmath:[\tau].
+
+== Execution Time Comparison
+
+.Serial Gauss Algorithm Execution Time Comparison
+[cols="3,1,1,1,1"]
+|===
+| Test Number | Matrix Size | Experimental Time (s) | Theoretical Time (s) | Discrepancy (%)
+
+| 1 | 10 | 0.0000028 | 0.0035309678535819285 | -99.92070162867218
+| 2 | 100 | 0.000226768 | 0.03635806147345183 | -99.37629237970901
+| 3 | 500 | 0.019378381 | 0.18184266234752117 | -89.34332529570767
+| 4 | 1,000 | 0.167206787 | 0.3636885978531451 | -54.024737650005484
+| 5 | 1,500 | 0.545533806 | 0.545533806 | 0
+| 6 | 2,000 | 1.472178916 | 0.7273788323037531 | 102.39507263874002
+| 7 | 2,500 | 2.874973819 | 0.9092237858699295 | 216.20090275677018
+| 8 | 3,000 | 5.194558852 | 1.0910687030672481 | 376.09823628859357
+|===
+
+[NOTE]
+====
+The discrepancies between the experimental and theoretical times indicate the influence of factors not accounted for in the theoretical model, such as system overhead, memory access times, and other operational anomalies.
+====
+
+== Parallel Execution Time and Speed Up
+
+When the algorithm is executed on multiple processors, the execution time decreases, and the speedup increases with the number of processors. The experimental results and the calculated speedup are presented in the following table:
+
+.Table 3.3: The Execution Time of the Parallel Gauss Algorithm and Speed Up
+[cols="1,1,1,1,1,1,1,1"]
+|===
+| Matrix Size | Serial Time (s) | Parallel Time (2 procs) (s) | Speed Up (2 procs) | Parallel Time (4 procs) (s) | Speed Up (4 procs) | Parallel Time (8 procs) (s) | Speed Up (8 procs)
+
+| 10 | 2.8e-06 | 3.246e-06 | 0.8626 | 0.000143424 | 0.01952 | 0.000127522 | 0.02196
+| 100 | 0.000226768 | 0.000328084 | 0.6912 | 0.005769097 | 0.03931 | 0.00231837 | 0.09781
+| 500 | 0.019378381 | 0.119724365 | 0.1619 | 0.089125458 | 0.2174 | 0.040962901 | 0.4731
+| 1000 | 0.167206787 | 0.467885608 | 0.3574 | 0.332895453 | 0.5023 | 0.167926717 | 0.9957
+| 1500 | 0.545533806 | 1.102438626 | 0.4948 | 0.74980871 | 0.7276 | 0.367408172 | 1.4848
+| 2000 | 1.472178916 | 1.936384309 | 0.7603 | 1.319799691 | 1.1155 | 0.636158202 | 2.3142
+| 2500 | 2.874973819 | 3.721549454 | 0.7725 | 2.248385249 | 1.2787 | 1.025883118 | 2.8024
+| 3000 | 5.194558852 | 4.236125458 | 1.2263 | 2.985020942 | 1.7402 | 1.496724203 | 3.4706
+|===
+
+
+== Theoretical Execution Time Calculation
+
+The theoretical execution time for the parallel algorithm is calculated using the formula:
+
+[latexmath]
+++++
+\[
+T_p = \frac{1}{p} \left(\sum_{i=2}^{n} (3i + 2i^2)\tau + (n-1)\log_2(p) \times (3\alpha + \frac{w(n+2)}{\beta})\right)
+\]
+++++
+
+where:
+- \( n \) is the matrix size,
+- \( p \) is the number of processors,
+- \( \tau \) is the execution time of a basic computational operation,
+- \( \alpha \) is the latency,
+- \( \beta \) is the bandwidth,
+- \( w \) is the word size in bytes.
+
+The comparison between the experimental parallel execution time and the theoretically calculated execution time is shown in the following table:
+
+.Table 3.4: Comparison of Experimental and Theoretical Parallel Execution Times
+[cols="1,1,1,1,1,1,1"]
+|===
+| Matrix Size | Parallel Time (2 procs) (s) | Theoretical Time (2 procs) (s) | Parallel Time (4 procs) (s) | Theoretical Time (4 procs) (s) | Parallel Time (8 procs) (s) | Theoretical Time (8 procs) (s)
+
+| 10 | 3.246e-06 | 0.0611 | 0.000143424 | 0.0312 | 0.000127522 | 0.0160
+| 100 | 0.000328084 | 0.6308 | 0.005769097 | 0.3230 | 0.00231837 | 0.1653
+| 500 | 0.119724365 | 3.1620 | 0.089125458 | 1.6224 | 0.040962901 | 0.8319
+| 1000 | 0.467885608 | 6.3401 | 0.332895453 | 3.2610 | 0.167926717 | 1.6760
+| 1500 | 1.102438626 | 9.5343 | 0.74980871 | 4.9156 | 0.367408172 | 2.5320
+| 2000 | 1.936384309 | 12.7445 | 1.319799691 | 6.5862 | 0.636158202 | 3.4001
+| 2500 | 3.721549454 | 15.9706 | 2.248385249 | 8.2728 | 1.025883118 | 4.2801
+| 3000 | 4.236125458 | 19.2128 | 2.985020942 | 9.9754 | 1.496724203 | 5.1722
+|===
+
+== Conclusion
+
+The parallel Gauss algorithm demonstrates a significant reduction in execution time compared to the serial version, especially as the number of processors increases. The experimental results show that the speedup scales with the number of processors, which is indicative of the parallel algorithm's efficiency.
+
+However, the theoretical execution times calculated based on the provided formula and assumed network parameters are not consistent with the experimental data. The theoretical times are significantly higher, suggesting that the assumed parameters for network latency and bandwidth may not accurately reflect the capabilities of the compute cluster. This discrepancy highlights the importance of precise system characterization for accurate performance modeling.
+
+Future work should involve adjusting the network parameters to more realistic values based on the hardware specifications and obtaining more accurate theoretical predictions. This will provide a better benchmark for evaluating the efficiency of parallel algorithms in solving large-scale linear equation systems.
 

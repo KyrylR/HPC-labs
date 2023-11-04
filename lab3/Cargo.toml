@@ -13,6 +13,7 @@ thiserror = { workspace = true }
 mpi = { workspace = true }
 
 lab1 = { path = "../lab1", version = "0.1.0" }
+memoffset = "0.9.0"
 
 
 [[example]]
@@ -21,4 +22,4 @@ path = "examples/serial.rs"
 
 [[example]]
 name = "lab3_parallel"
-path = "examples/parallel.rs"
+path = "examples/parallel2.rs"

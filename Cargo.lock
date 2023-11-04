@@ -369,6 +369,7 @@ version = "0.1.0"
 dependencies = [
  "criterion",
  "lab1",
+ "memoffset",
  "mpi",
  "once_cell",
  "rand",

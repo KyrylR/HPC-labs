@@ -5,7 +5,7 @@ use mpi::traits::*;
 use crate::common::input_size;
 pub use crate::parallel::error::Error;
 
-mod error;
+pub mod error;
 
 pub fn init_program() -> Result<SimpleCommunicator, Error> {
     let Some(universe) = mpi::initialize() else {
