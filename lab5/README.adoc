@@ -19,16 +19,20 @@ This report presents the results of computational experiments conducted to evalu
 The methodology involved implementing the Parallel Floyd Algorithm with varying numbers of processors and vertices. The execution times were recorded for both the serial and parallel versions of the algorithm.
 
 For the theoretical time calculation, we used the following formula:
-\[ T_p = n^2 * [n/p] * τ + n * [log2(p)] * (α + w * n / β) \]
+
+latexmath:[ T_p = n^2 * int(n/p) * τ + n * int(log2(p)) * (α + w * n / β) ]
+
 where:
+
 - *n* is the number of graph vertices
 - *p* is the number of processes
 - *τ* is the execution time of the basic computational operation (derived from test 5)
-- *α* is the latency (assumed value)
-- *β* is the data communication network bandwidth (assumed value)
+- *α* is the latency
+- *β* is the data communication network bandwidth
 
 The execution time of the basic operation (τ) was calculated from test number 5's data from the Serial Floyd Algorithm, using the formula:
-\[ τ = \text{Serial Time for Test 5} / (800^2 - 800) \]
+
+latexmath:[ τ = \text{Serial Time for Test 5} / (800^2 - 800) ]
 
 == Experimental Setup
 
@@ -50,6 +54,24 @@ The experiments were conducted using varying numbers of processors and graph siz
 | 6           | 900                | 1.831543729 s          | 1846.738 ms  | 487.561100 ms| 536.6596 ms
 | 7           | 1,000              | 2.408038096 s          | 2526.837 ms  | 689.156001 ms| 733.7756 ms
 |===
+
+=== Computation Speed Up for the Parallel Floyd Algorithm
+
+The speed up is calculated as the ratio of the execution time of the serial algorithm to that of the parallel algorithm for each number of processors.
+
+[cols="2,3*2",options="header"]
+|===
+| Test Number | 2 Processors | 4 Processors | 8 Processors
+
+| 1           | 34.34        | 14.20        | 15.45
+| 2           | 0.96         | 2.76         | 3.42
+| 3           | 0.93         | 3.46         | 3.31
+| 4           | 0.99         | 3.31         | 3.42
+| 5           | 0.98         | 3.74         | 3.51
+| 6           | 0.99         | 3.76         | 3.41
+| 7           | 0.95         | 3.49         | 3.28
+|===
+
 
 === Theoretical Times for the Parallel Floyd Algorithm
 
