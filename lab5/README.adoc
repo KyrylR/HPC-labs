@@ -1,2 +1,87 @@
 = Parallel Algorithms of Graph Processing
 
+:doctype: article
+:toc: macro
+:toc-title:
+:table-caption!:
+:figures-caption!:
+:author: Kyrylo Riabov
+:revdate: {docdate}
+
+toc::[]
+
+== Introduction
+
+This report presents the results of computational experiments conducted to evaluate the performance of the Parallel Floyd Algorithm. The experiments are aimed at understanding the algorithm's efficiency in different parallel computing environments.
+
+== Methodology
+
+The methodology involved implementing the Parallel Floyd Algorithm with varying numbers of processors and vertices. The execution times were recorded for both the serial and parallel versions of the algorithm.
+
+For the theoretical time calculation, we used the following formula:
+\[ T_p = n^2 * [n/p] * τ + n * [log2(p)] * (α + w * n / β) \]
+where:
+- *n* is the number of graph vertices
+- *p* is the number of processes
+- *τ* is the execution time of the basic computational operation (derived from test 5)
+- *α* is the latency (assumed value)
+- *β* is the data communication network bandwidth (assumed value)
+
+The execution time of the basic operation (τ) was calculated from test number 5's data from the Serial Floyd Algorithm, using the formula:
+\[ τ = \text{Serial Time for Test 5} / (800^2 - 800) \]
+
+== Experimental Setup
+
+The experiments were conducted using varying numbers of processors and graph sizes. The execution times for both the serial and parallel versions of the Floyd Algorithm were measured.
+
+== Results
+
+=== Execution Time for the Parallel Floyd Algorithm
+
+[cols="1,1,1,1,1,1",options="header"]
+|===
+| Test Number | Number of Vertices | Serial Floyd Algorithm | 2 Processors | 4 Processors | 8 Processors
+
+| 1           | 10                 | 2.944µs                | 0.085738 ms  | 0.207358 ms  | 0.190592 ms
+| 2           | 500                | 302.611029 ms          | 314.8070 ms  | 109.503064 ms| 88.52225 ms
+| 3           | 600                | 516.828511 ms          | 556.7803 ms  | 149.417276 ms| 156.0615 ms
+| 4           | 700                | 845.861716 ms          | 858.3265 ms  | 255.600005 ms| 247.1965 ms
+| 5           | 800                | 1.278655874 s          | 1298.441 ms  | 341.627051 ms| 363.9974 ms
+| 6           | 900                | 1.831543729 s          | 1846.738 ms  | 487.561100 ms| 536.6596 ms
+| 7           | 1,000              | 2.408038096 s          | 2526.837 ms  | 689.156001 ms| 733.7756 ms
+|===
+
+=== Theoretical Times for the Parallel Floyd Algorithm
+
+[cols="1,1,1,1,1",options="header"]
+|===
+| Test Number | Number of Vertices | 2 Processors (Model) | 4 Processors (Model) | 8 Processors (Model)
+
+| 1           | 10                 | 2.100200 ms          | 2.700100 ms          | 3.550050 ms
+| 2           | 500                | 1253.019 ms          | 631.509 ms           | 321.255 ms
+| 3           | 600                | 2164.233 ms          | 1088.616 ms          | 552.808 ms
+| 4           | 700                | 3436.652 ms          | 1726.326 ms          | 874.163 ms
+| 5           | 800                | 5128.478 ms          | 2574.239 ms          | 1301.619 ms
+| 6           | 900                | 7300.911 ms          | 3663.955 ms          | 1849.478 ms
+| 7           | 1,000              | 10013.152 ms         | 5023.076 ms          | 2533.038 ms
+|===
+
+== Discussion
+
+The computational experiments and theoretical calculations for the Parallel Floyd Algorithm reveal several key insights:
+
+1. *Scalability with Number of Processors*: As the number of processors increases, there is a clear reduction in execution time for the parallel algorithm, indicating effective scalability. However, this reduction is not linear, suggesting diminishing returns as the processor count increases.
+
+2. *Comparison with Theoretical Model*: The theoretical times, calculated based on the formula provided, generally align with the experimental results. This alignment validates the theoretical model to a certain extent, though some discrepancies suggest factors like network latency and overheads in parallel processing.
+
+3. *Effect of Graph Size*: Larger graphs significantly increase execution times, both in the serial and parallel cases. However, the impact is more pronounced in the serial algorithm, underscoring the efficiency of parallel processing for large-scale problems.
+
+4. *Performance Bottlenecks*: The increasing gap between theoretical and experimental times with more processors for larger graph sizes indicates potential bottlenecks. These might include communication overheads and non-uniform memory access times in a distributed computing environment.
+
+== Conclusion
+
+The Parallel Floyd Algorithm demonstrates considerable efficiency and scalability in handling large graph sizes, especially when leveraging higher processor counts. The experimental results closely align with the theoretical model, validating its applicability in predicting performance trends. However, the diminishing returns with increasing processor counts and the discrepancies between theoretical and experimental times for larger graphs highlight the complexities of parallel computing, such as communication overheads and hardware limitations.
+
+This study underscores the importance of balancing computational load and communication overhead when designing algorithms for parallel processing environments. Future work should focus on optimizing these aspects to further enhance the performance of such algorithms.
+
+

@@ -1,10 +1,11 @@
 = Parallel Methods of Data Sorting
+
 :doctype: article
 :toc: macro
 :toc-title:
 :table-caption!:
 :figures-caption!:
-:author: Kyrylo Riabo
+:author: Kyrylo Riabov
 :revdate: {docdate}
 
 toc::[]
