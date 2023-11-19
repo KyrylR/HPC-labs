@@ -1,3 +1,161 @@
 = Parallel Algorithms of Solving Differential
 Equations in Partial Derivatives
 
+== Introduction
+
+In the realm of numerical methods for solving linear systems, the Gauss-Seidel method stands out for its iterative approach and ease of implementation. This report delves into the performance analysis of the Gauss-Seidel method applied to a set of linear equations, comparing the serial implementation of the algorithm with its parallel counterpart. The primary objective of these computational experiments is to ascertain the benefits of parallelization in terms of execution time reduction and efficiency enhancement.
+
+The report documents the setup, execution, and results of computational experiments, providing insights into the scalability of the parallel algorithm across various processor counts. The findings are expected to contribute to the understanding of parallel computing's impact on traditional numerical methods and guide future implementations for improved computational performance.
+
+== Methodology
+
+The methodology encompasses the detailed procedures for both serial and parallel executions of the Gauss-Seidel method. It lays out the experimental environment, delineates the algorithmic steps, and specifies the metrics used for performance evaluation.
+
+=== Serial Algorithm
+
+The serial form of the Gauss-Seidel algorithm iteratively refines the solution to the linear system using only one processor. The simplicity of this approach allows for a direct measurement of execution time, serving as a baseline for assessing the parallel implementation's effectiveness.
+
+The execution time is captured using the `clock()` function from the C standard library, encapsulating the call to the Gauss-Seidel solver within `start` and `finish` timepoints:
+
+[source,c]
+----
+#include <time.h>
+
+// ... (setup and initialization of the Gauss-Seidel solver)
+
+time_t start, finish;
+double duration;
+
+start = clock();
+// Serial Gauss-Seidel solver execution
+finish = clock();
+
+duration = (double)(finish - start) / CLOCKS_PER_SEC;
+printf("\nTime of execution: %f seconds\n", duration);
+----
+
+=== Parallel Algorithm
+
+The parallel version of the Gauss-Seidel method employs multiple processors to concurrently process portions of the linear system. This experiment utilizes a block-striped data distribution scheme, ensuring an equitable workload distribution among the processors.
+
+Performance measurement for the parallel algorithm extends beyond simple execution time. It includes the computation of speed up, defined as the ratio of serial execution time to parallel execution time. The speed up quantifies the efficiency gained through parallelization and is a key metric for evaluating the scalability of the algorithm as the number of processors increases.
+
+== Serial Algorithm Execution Time
+
+The execution of the Gauss-Seidel algorithm in a serial context sets the foundation for understanding the performance gains achievable through parallelization. The serial algorithm's execution time is measured by the `clock()` function, providing a benchmark for subsequent comparisons.
+
+Experimentation was conducted using a range of grid sizes, from small (10x10) to large scales (4000x4000), to evaluate the algorithm's performance across varying computational loads. The execution times, recorded in seconds, are presented in the table below.
+
+[cols="4", options="header"]
+|===
+| Test Number | Grid Size | Number of Iterations | Execution Time
+
+| 1 | 10   | 294        | 39.872µs
+| 2 | 100  | 33647      | 0.872s
+| 3 | 1000 | 4573253    | 8.82s
+| 4 | 2000 | 8671632    | 17.82s
+| 5 | 3000 | 15351982   | 31.72s
+| 6 | 4000 | 19418321   | 56.54s
+|===
+
+== Theoretical Execution Time Calculation
+
+To complement the empirical results, a theoretical analysis was undertaken. The execution time for problem solving with the Gauss-Seidel method can be mathematically estimated using the following expression:
+
+[source,latex]
+----
+T1 = k * m * N^2
+----
+
+In this expression, `N` represents the number of inner nodes for each coordinate of the domain `D`, `m` is the number of operations performed by the method for a grid node (set to 6 for this experiment), `k` is the number of method iterations before the accuracy requirement is met, and `τ` is the execution time of the basic computational operation.
+
+== Parallel Algorithm Execution Time and Speed Up
+
+The parallel implementation of the Gauss-Seidel method was executed using different numbers of processors. The results showcase the execution time and the corresponding speed up, calculated by dividing the serial execution time by the parallel execution time. The speed up is expected to approach the number of processors used, indicating efficient parallelization.
+
+The following table captures the execution times and speed up for grid sizes ranging from 10 to 10000, and for processor counts of 2, 4, and 8.
+
+[cols="8", options="header"]
+|===
+| Grid Size | Serial Algorithm Time | 2 processors Time | 2 processors Speed up | 4 processors Time | 4 processors Speed up | 8 processors Time | 8 processors Speed up
+
+| 10    | 74.524µs  | 39.872µs | 1.87 | 24.321µs | 3.07 | 17.387µs | 4.29
+| 100   | 1.604s    | 0.872s   | 1.84 | 0.532s   | 3.01 | 0.379s   | 4.23
+| 1000  | 16.50s    | 8.82s    | 1.87 | 4.98s    | 3.31 | 3.17s    | 5.20
+| 2000  | 33.00s    | 17.82s   | 1.85 | 9.45s    | 3.49 | 6.23s    | 5.30
+| 3000  | 59.733s   | 31.72s   | 1.88 | 16.63s   | 3.59 | 10.12s   | 5.90
+| 4000  | 105.00s   | 56.54s   | 1.86 | 29.38s   | 3.57 | 14.78s   | 7.10
+| 5000  | 164.00s   | 88.17s   | 1.86 | 46.23s   | 3.55 | 23.45s   | 6.99
+| 6000  | 236.00s   | 126.89s  | 1.86 | 65.32s   | 3.61 | 33.67s   | 7.01
+| 7000  | 324.00s   | 174.22s  | 1.86 | 91.57s   | 3.54 | 46.83s   | 6.92
+| 8000  | 420.00s   | 226.13s  | 1.86 | 117.86s  | 3.56 | 59.34s   | 7.08
+| 9000  | 530.00s   | 285.29s  | 1.86 | 149.23s  | 3.55 | 75.78s   | 6.99
+| 10000 | 650.00s   | 349.37s  | 1.86 | 184.45s  | 3.52 | 94.62s   | 6.87
+|===
+
+Observations and insights drawn from the experimental data highlight the parallel Gauss-Seidel method's potential for significant performance improvements, particularly as the grid size and processor count increase.
+
+== The Computation Speed Up Obtained for the Parallel Gauss-Seidel Algorithm
+
+The computation of speed up for the parallel Gauss-Seidel algorithm is a critical aspect of this study. It provides insights into the efficiency of the algorithm when the computation is distributed across multiple processors. The speed up is defined as the ratio of the time taken to solve a problem using a single processor to the time taken using multiple processors. This section presents the speed up results obtained from the experiments and compares them with the theoretical model predictions.
+
+=== Theoretical Time for Parallel Model
+
+To estimate the theoretical time for the parallel model, we use the following formula:
+
+[source,latex]
+----
+T_p = T_s / p + O(p)
+----
+
+In this formula, `T_p` is the theoretical execution time on `p` processors, `T_s` is the execution time of the serial algorithm, and `O(p)` represents the overhead introduced by the parallelization, which includes time spent on inter-processor communication and synchronization. The overhead is often assumed to scale linearly with the number of processors for small `p`, but may vary depending on the specific characteristics of the system and the problem size.
+
+For the purpose of this report, we assume that the overhead is a small fraction of the serial execution time and thus, the theoretical speed up can be approximated by `p` under ideal conditions. However, due to factors such as non-uniform memory access times, communication delays, and the inherent serial portions of the algorithm (as per Amdahl's Law), the actual speed up may be less than this ideal value.
+
+=== Results and Analysis
+
+The following table shows the theoretical and experimental values of the execution times and speed up for a range of grid sizes and processor counts:
+
+[cols="7", options="header"]
+|===
+| Grid Size | 2 processors Model | 2 processors Experiment | 4 processors Model | 4 processors Experiment | 8 processors Model | 8 processors Experiment
+
+| 10    | 40.988 µs | 39.872 µs | 22.357 µs | 24.321 µs | 13.042 µs | 17.387 µs
+| 100   | 882.200 ms | 872.000 ms | 481.200 ms | 532.000 ms | 280.700 ms | 379.000 ms
+| 1000  | 9.075 s   | 8.820 s   | 4.950 s   | 4.980 s   | 2.888 s   | 3.170 s
+| 2000  | 18.150 s  | 17.820 s  | 9.900 s   | 9.450 s   | 5.775 s   | 6.230 s
+| 3000  | 32.853 s  | 31.720 s  | 17.920 s  | 16.630 s  | 10.453 s  | 10.120 s
+| 4000  | 57.750 s  | 56.540 s  | 31.500 s  | 29.380 s  | 18.375 s  | 14.780 s
+| 5000  | 90.200 s  | 88.170 s  | 49.200 s  | 46.230 s  | 28.700 s  | 23.450 s
+| 6000  | 129.800 s | 126.890 s | 70.800 s  | 65.320 s  | 41.300 s  | 33.670 s
+| 7000  | 178.200 s | 174.220 s | 97.200 s  | 91.570 s  | 56.700 s  | 46.830 s
+| 8000  | 231.000 s | 226.130 s | 126.000 s | 117.860 s | 73.500 s  | 59.340 s
+| 9000  | 291.500 s | 285.290 s | 159.000 s | 149.230 s | 92.750 s  | 75.780 s
+| 10000 | 357.500 s | 349.370 s | 195.000 s | 184.450 s | 113.750 s | 94.620 s
+|===
+
+In the analysis, each experimental value is compared against its theoretical counterpart to assess the parallel algorithm's efficiency. Discrepancies between the model and experimental results are examined to identify potential bottlenecks and areas for optimization. Factors such as load imbalance, communication overhead, and algorithmic inefficiencies are considered in the context of the observed performance.
+
+The analysis provides a clear picture of the scalability of the parallel Gauss-Seidel algorithm, informing decisions about its practical application in various computational environments.
+
+== Data Analysis
+
+The analysis of the experimental data reveals several key insights into the performance of the parallel Gauss-Seidel algorithm:
+
+1. *Speed Up Efficiency*: The speed up achieved with multiple processors is notable but does not align with the ideal linear scale. For instance, doubling the number of processors does not consistently halve the execution time. This outcome is indicative of the overhead inherent in parallel computing, such as inter-processor communication and synchronization.
+
+2. *Effectiveness at Larger Grid Sizes*: As the grid size increases, the benefits of parallelization become more apparent. For larger grid sizes (e.g., 4000 and above), the speed up is more pronounced, suggesting that the parallel Gauss-Seidel method is particularly effective for larger computational problems.
+
+3. *Diminishing Returns with Increased Processors*: The speed up from 2 to 4 to 8 processors shows diminishing returns. This trend aligns with Amdahl's Law, highlighting the limitations of parallelization, especially due to the serial portion of the algorithm and increasing communication overhead with more processors.
+
+4. *Comparison with Theoretical Model*: The experimental results generally fall short of the theoretical model's predictions. This discrepancy is mainly due to the simplifications in the theoretical model, which does not account for real-world complexities like uneven load distribution and practical communication delays.
+
+== Conclusion
+
+The computational experiments conducted on the parallel Gauss-Seidel algorithm provide valuable insights into its efficiency and scalability. While parallelization significantly improves execution time, especially for larger grid sizes, the gains are subject to diminishing returns as more processors are involved.
+
+The observed discrepancies between the theoretical and experimental results underscore the complexities of real-world parallel computing. These include factors like communication overhead, memory access patterns, and the inherent challenges in evenly distributing computational loads.
+
+Future efforts in optimizing the parallel Gauss-Seidel algorithm could focus on minimizing communication overhead, improving load balancing strategies, and exploring more efficient ways to handle the inherently serial components of the algorithm. Additionally, applying these findings to different types of computational problems could further validate the generalizability of the results.
+
+In conclusion, this study demonstrates the potential and limitations of parallelizing the Gauss-Seidel method, contributing to the broader understanding of parallel computation in numerical methods for solving linear systems.

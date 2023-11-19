@@ -21,4 +21,4 @@ path = "examples/serial.rs"
 
 [[example]]
 name = "lab6_parallel"
-path = "examples/parallel.rs"
+path = "examples/parallel3.rs"
